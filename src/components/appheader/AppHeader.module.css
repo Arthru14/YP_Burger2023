@@ -1,0 +1,41 @@
+.header {
+  display: flex;
+  justify-content: center;
+  height: 88px;
+  top: 40px;
+}
+
+.nav {
+  width: 1240px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.nav a {
+  text-decoration: none;
+  display: flex;
+  align-items: center;
+}
+
+.ulhr {
+  display: flex;
+  align-items: center;
+  margin: 0;
+  padding: 4px;
+  list-style-type: none;
+}
+
+.ulhr li {
+  display: flex;
+  align-items: center;
+  margin-right: 4px;
+  padding: 4px;
+}
+
+.ulhr > li > a {
+  text-decoration: none;
+  display: flex;
+  align-items: center;
+  color: #f2f2f3;
+}
