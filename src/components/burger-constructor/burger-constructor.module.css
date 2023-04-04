@@ -1,0 +1,10 @@
+.wrapper {
+  display: flex;
+  flex-direction: column;
+  width: 608px;
+  height: 100%;
+  /* flex: 1; */
+  overflow: hidden;
+  /* for delete */
+  /* border: 1px solid blue; */
+}

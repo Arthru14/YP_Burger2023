@@ -2,19 +2,45 @@
   display: flex;
   justify-content: center;
   height: 88px;
+  width: 100%;
   top: 40px;
+  background-color: #1c1c21;
 }
 
-.nav {
-  width: 1240px;
+.wrapper {
   display: flex;
-  justify-content: space-between;
+  justify-content: center;
+  align-items: center;
+  width: 1240px;
+}
+
+.navMenu {
+  display: flex;
+  justify-content: start;
+  width: 33%;
+}
+
+.navLogo {
+  display: flex;
+  justify-content: center;
+  width: 33%;
+}
+
+.navLogin {
+  display: flex;
+  justify-content: end;
+  width: 33%;
+}
+
+.navLogin a {
+  text-decoration: none;
+  display: flex;
   align-items: center;
 }
 
-.nav a {
-  text-decoration: none;
+.nav {
   display: flex;
+  justify-content: space-between;
   align-items: center;
 }
 
@@ -27,8 +53,6 @@
 }
 
 .ulhr li {
-  display: flex;
-  align-items: center;
   margin-right: 4px;
   padding: 4px;
 }
@@ -37,5 +61,4 @@
   text-decoration: none;
   display: flex;
   align-items: center;
-  color: #f2f2f3;
 }
