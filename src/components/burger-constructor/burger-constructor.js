@@ -1,4 +1,5 @@
 import React from "react";
+import PropTypes from "prop-types";
 import styles from "./burger-constructor.module.css";
 import { ConstructorElement } from "@ya.praktikum/react-developer-burger-ui-components";
 import { Button } from "@ya.praktikum/react-developer-burger-ui-components";
@@ -6,6 +7,7 @@ import { CurrencyIcon } from "@ya.praktikum/react-developer-burger-ui-components
 import { DragIcon } from "@ya.praktikum/react-developer-burger-ui-components";
 import Modal from "../modal/modal";
 import OrderDetails from "../order-details/order-details";
+import ServerDataTypes from "../../utils/data-format";
 
 function BurgerComponentItem(props) {
   return (
@@ -103,10 +105,7 @@ function PlaceOrder(props) {
       {props.price > 0 ? (
         <>
           <span className={`${styles.place_order_price} pr-10`}>
-            <span
-              className="text text_type_digits-default pr-4"
-              onClick={() => handleOpenModal}
-            >
+            <span className="text text_type_digits-default pr-4">
               {props.price}
             </span>
             <CurrencyIcon type="primary" className="pr-10" />
@@ -143,4 +142,7 @@ function BurgerConstructor(props) {
   );
 }
 
+BurgerConstructor.propTypes = {
+  dataBurgers: PropTypes.arrayOf(ServerDataTypes.isRequired).isRequired,
+};
 export default BurgerConstructor;

@@ -1,8 +1,12 @@
 import React from "react";
+import PropTypes from "prop-types"
 import styles from "./burger-ingredients.module.css";
 import { Tab } from "@ya.praktikum/react-developer-burger-ui-components";
 import { CurrencyIcon } from "@ya.praktikum/react-developer-burger-ui-components";
 import { Counter } from "@ya.praktikum/react-developer-burger-ui-components";
+import Modal from "../modal/modal";
+import IngredientDetails from "../ingredient-details/ingredient-details";
+import ServerDataTypes from "../../utils/data-format"
 
 function Tabs() {
   const [current, setCurrent] = React.useState("one");
@@ -37,7 +41,10 @@ function PriceOut(props) {
 
 function ItemOfBurger(props) {
   return (
-    <div className={`${styles.ingridItem} pr-3 pl-3 pt-6 pb-2`}>
+    <div
+      className={`${styles.ingridItem} pr-3 pl-3 pt-6 pb-2`}
+      onClick={() => props.onClick(true)}
+    >
       <div style={{ position: "relative" }} key={props.id}>
         <img src={props.img} alt={props.name} />
         {props.count && (
@@ -51,7 +58,17 @@ function ItemOfBurger(props) {
 }
 
 function BurgerIngredients(props) {
-  // console.log(props.dataBurgers);
+  const [modalVisible, setModalVisible] = React.useState(false);
+  const [selectedItem, setSelectedItem] = React.useState();
+
+  const handleOpenModal = () => {
+    setModalVisible(true);
+  };
+
+  const handleCloseModal = () => {
+    setModalVisible(false);
+  };
+
   return (
     <div className={styles.wrapper}>
       <h1 className="text text_type_main-large pt-10 pb-5">Соберите бургер</h1>
@@ -71,6 +88,10 @@ function BurgerIngredients(props) {
                   img={ingridItem.image}
                   name={ingridItem.name}
                   id={ingridItem.id}
+                  onClick={() => {
+                    setSelectedItem(index);
+                    handleOpenModal();
+                  }}
                 />
               ) : null;
             })}
@@ -79,7 +100,7 @@ function BurgerIngredients(props) {
         <div id="sauceDiv">
           <h2 className="text text_type_main-medium pt-2">Соусы</h2>
           <div className={styles.ingrid}>
-            {props.dataBurgers.map((ingridItem) => {
+            {props.dataBurgers.map((ingridItem, index) => {
               return ingridItem.type === "sauce" ? (
                 <ItemOfBurger
                   count={2}
@@ -87,6 +108,10 @@ function BurgerIngredients(props) {
                   img={ingridItem.image}
                   name={ingridItem.name}
                   id={ingridItem.id}
+                  onClick={() => {
+                    setSelectedItem(index);
+                    handleOpenModal();
+                  }}
                 />
               ) : null;
             })}
@@ -95,7 +120,7 @@ function BurgerIngredients(props) {
         <div id="mainDiv">
           <h2 className="text text_type_main-medium pt-2">Начинки</h2>
           <div className={styles.ingrid}>
-            {props.dataBurgers.map((ingridItem) => {
+            {props.dataBurgers.map((ingridItem, index) => {
               return ingridItem.type === "main" ? (
                 <ItemOfBurger
                   count={2}
@@ -103,14 +128,29 @@ function BurgerIngredients(props) {
                   img={ingridItem.image}
                   name={ingridItem.name}
                   id={ingridItem.id}
+                  onClick={() => {
+                    setSelectedItem(index);
+                    handleOpenModal();
+                  }}
                 />
               ) : null;
             })}
           </div>
         </div>
+        {modalVisible && (
+          <Modal setModalVisible={setModalVisible}>
+            <IngredientDetails
+              ingridientDetail={props.dataBurgers[selectedItem]}
+            />
+          </Modal>
+        )}
       </div>
     </div>
   );
 }
 
 export default BurgerIngredients;
+
+BurgerIngredients.propTypes = {
+  dataBurgers: PropTypes.arrayOf(ServerDataTypes.isRequired).isRequired
+}

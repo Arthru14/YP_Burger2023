@@ -14,4 +14,13 @@
   transform: translate(-50%, -50%);
   width: 720px;
   height: 718px;
+  margin: 40px;
+  /* display: flex;
+  flex-direction: column;
+  align-content: center; */
+}
+
+.modal_window span {
+  top: 60px;
+  right: 40px;
 }
