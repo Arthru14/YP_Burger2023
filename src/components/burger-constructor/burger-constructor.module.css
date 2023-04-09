@@ -3,8 +3,36 @@
   flex-direction: column;
   width: 608px;
   height: 100%;
-  /* flex: 1; */
   overflow: hidden;
-  /* for delete */
-  /* border: 1px solid blue; */
+}
+
+.place_order {
+  display: flex;
+  justify-content: end;
+  align-items: center;
+  height: 60px;
+  overflow: hidden;
+}
+
+.place_order_price {
+  display: flex;
+  justify-content: end;
+  align-items: center;
+}
+
+.burger_inrid_list {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  align-items: end;
+  width: 100%;
+  height: calc(100% - 240px);
+  overflow: auto;
+}
+
+.burger_inrid_list_item {
+  display: flex;
+  justify-content: end;
+  align-items: center;
+  width: 100%;
 }

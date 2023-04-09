@@ -38,19 +38,20 @@ function PriceOut(props) {
 function ItemOfBurger(props) {
   return (
     <div className={`${styles.ingridItem} pr-3 pl-3 pt-6 pb-2`}>
-      <div style={{ position: "relative" }}>
-        <img src="https://code.s3.yandex.net/react/code/bun-01.png" />
+      <div style={{ position: "relative" }} key={props.id}>
+        <img src={props.img} alt={props.name} />
         {props.count && (
           <Counter count={props.count} size="default" extraClass="m-1" />
         )}
       </div>
-      <PriceOut price={props.price ? props.price : "---"} />
-      <span className="ext text_type_main-default">Краторная булка N-200i</span>
+      <PriceOut price={props.price} />
+      <span className="ext text_type_main-default">{props.name}</span>
     </div>
   );
 }
 
-function BurgerIngredients() {
+function BurgerIngredients(props) {
+  // console.log(props.dataBurgers);
   return (
     <div className={styles.wrapper}>
       <h1 className="text text_type_main-large pt-10 pb-5">Соберите бургер</h1>
@@ -58,31 +59,53 @@ function BurgerIngredients() {
         <Tabs />
       </div>
       <div className={`${styles.ingridList} custom-scroll`}>
-        <div>
+        <div id="bunDiv">
           <h2 className="text text_type_main-medium pt-10">Булки</h2>
           <div className={styles.ingrid}>
-            <ItemOfBurger count="2" price="20" />
-            <ItemOfBurger />
-            <ItemOfBurger />
-            <ItemOfBurger />
+            {props.dataBurgers.map((ingridItem, index) => {
+              return ingridItem.type === "bun" ? (
+                <ItemOfBurger
+                  key={index}
+                  count={2}
+                  price={ingridItem.price}
+                  img={ingridItem.image}
+                  name={ingridItem.name}
+                  id={ingridItem.id}
+                />
+              ) : null;
+            })}
           </div>
         </div>
-        <div>
+        <div id="sauceDiv">
           <h2 className="text text_type_main-medium pt-2">Соусы</h2>
           <div className={styles.ingrid}>
-            <ItemOfBurger />
-            <ItemOfBurger />
-            <ItemOfBurger />
-            <ItemOfBurger />
+            {props.dataBurgers.map((ingridItem) => {
+              return ingridItem.type === "sauce" ? (
+                <ItemOfBurger
+                  count={2}
+                  price={ingridItem.price}
+                  img={ingridItem.image}
+                  name={ingridItem.name}
+                  id={ingridItem.id}
+                />
+              ) : null;
+            })}
           </div>
         </div>
-        <div>
+        <div id="mainDiv">
           <h2 className="text text_type_main-medium pt-2">Начинки</h2>
           <div className={styles.ingrid}>
-            <ItemOfBurger />
-            <ItemOfBurger />
-            <ItemOfBurger />
-            <ItemOfBurger />
+            {props.dataBurgers.map((ingridItem) => {
+              return ingridItem.type === "main" ? (
+                <ItemOfBurger
+                  count={2}
+                  price={ingridItem.price}
+                  img={ingridItem.image}
+                  name={ingridItem.name}
+                  id={ingridItem.id}
+                />
+              ) : null;
+            })}
           </div>
         </div>
       </div>
