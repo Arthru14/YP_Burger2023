@@ -5,6 +5,7 @@ import { Button } from "@ya.praktikum/react-developer-burger-ui-components";
 import { CurrencyIcon } from "@ya.praktikum/react-developer-burger-ui-components";
 import { DragIcon } from "@ya.praktikum/react-developer-burger-ui-components";
 import Modal from "../modal/modal";
+import OrderDetails from "../order-details/order-details";
 
 function BurgerComponentItem(props) {
   return (
@@ -120,8 +121,7 @@ function PlaceOrder(props) {
           </Button>
           {modalVisible && (
             <Modal setModalVisible={setModalVisible}>
-              {/* <OrderDetails /> */}
-              <p>Test text of Modal window</p>
+              <OrderDetails orderNum="034536" />
             </Modal>
           )}
         </>

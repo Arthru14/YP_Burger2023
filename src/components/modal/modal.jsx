@@ -1,4 +1,8 @@
+import React from "react";
 import ReactDOM from "react-dom";
+import { CloseIcon } from "@ya.praktikum/react-developer-burger-ui-components";
+import ModalOverlay from "../modal-overlay/modal-overlay";
+import styles from "./modal.module.css"
 
 export default function Modal(props) {
   React.useEffect(() => {
@@ -10,7 +14,7 @@ export default function Modal(props) {
     };
   }, [props]);
 
-  const portalContent = (
+  const content = (
     <div
       onClick={() => {
         props.setModalVisible(false);
@@ -18,22 +22,33 @@ export default function Modal(props) {
     >
       <div onClick={(e) => e.stopPropagation()}>
         <div>
-          <span>{props.header}</span>
-          <img
-            src={null}
-            alt={"Закрыть"}
-            onClick={() => props.setModalVisible(false)}
-          />
+          <span onClick={() => props.setModalVisible(false)}>
+            <CloseIcon type="secondary" />
+          </span>
         </div>
-
-        {/*Компонент-содержание*/}
         {props.children}
       </div>
     </div>
   );
 
   return ReactDOM.createPortal(
-    portalContent,
+    <>
+      <ModalOverlay onClick={props.setModalVisible} />
+      <div
+        onClick={() => {
+          props.setModalVisible(false);
+        }}
+      >
+        <div className={styles.modal_window} onClick={(e) => e.stopPropagation()}>
+          <div>
+            <span onClick={() => props.setModalVisible(false)}>
+              <CloseIcon type="secondary" />
+            </span>
+          </div>
+          {props.children}
+        </div>
+      </div>
+    </>,
     document.getElementById("react-modals")
   );
 }

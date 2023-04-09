@@ -1,0 +1,16 @@
+.content {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+.order_name {
+  color: #f2f2f3;
+}
+
+.order_text {
+  color: #8585ad;
+}
+
+.order_second_text {
+  color: #8585ad;
+}
