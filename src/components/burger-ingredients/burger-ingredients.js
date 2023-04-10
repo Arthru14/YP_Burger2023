@@ -1,17 +1,17 @@
 import React from "react";
-import PropTypes from "prop-types"
+import PropTypes from "prop-types";
 import styles from "./burger-ingredients.module.css";
 import { Tab } from "@ya.praktikum/react-developer-burger-ui-components";
 import { CurrencyIcon } from "@ya.praktikum/react-developer-burger-ui-components";
 import { Counter } from "@ya.praktikum/react-developer-burger-ui-components";
 import Modal from "../modal/modal";
 import IngredientDetails from "../ingredient-details/ingredient-details";
-import ServerDataTypes from "../../utils/data-format"
+import ServerDataTypes from "../../utils/data-format";
 
 function Tabs() {
   const [current, setCurrent] = React.useState("one");
   return (
-    <div style={{ display: "flex" }}>
+    <div className={styles.tab_main}>
       <Tab value="one" active={current === "one"} onClick={setCurrent}>
         Булки
       </Tab>
@@ -27,13 +27,8 @@ function Tabs() {
 
 function PriceOut(props) {
   return (
-    <div style={{ display: "flex", alignItem: "center" }} className="pt-1 pb-1">
-      <span
-        style={{ paddingRight: "4px" }}
-        className="text text_type_digits-default"
-      >
-        {props.price}
-      </span>
+    <div className={`${styles.price_out_main} pt-1 pb-1`}>
+      <span className="text text_type_digits-default pr-4">{props.price}</span>
       <CurrencyIcon type="primary" />
     </div>
   );
@@ -45,7 +40,7 @@ function ItemOfBurger(props) {
       className={`${styles.ingridItem} pr-3 pl-3 pt-6 pb-2`}
       onClick={() => props.onClick(true)}
     >
-      <div style={{ position: "relative" }} key={props.id}>
+      <div className={styles.item_of_burger} key={props.id}>
         <img src={props.img} alt={props.name} />
         {props.count && (
           <Counter count={props.count} size="default" extraClass="m-1" />
@@ -65,16 +60,10 @@ function BurgerIngredients(props) {
     setModalVisible(true);
   };
 
-  const handleCloseModal = () => {
-    setModalVisible(false);
-  };
-
   return (
     <div className={styles.wrapper}>
       <h1 className="text text_type_main-large pt-10 pb-5">Соберите бургер</h1>
-      <div>
-        <Tabs />
-      </div>
+      <Tabs />
       <div className={`${styles.ingridList} custom-scroll`}>
         <div id="bunDiv">
           <h2 className="text text_type_main-medium pt-10">Булки</h2>
@@ -82,12 +71,12 @@ function BurgerIngredients(props) {
             {props.dataBurgers.map((ingridItem, index) => {
               return ingridItem.type === "bun" ? (
                 <ItemOfBurger
-                  key={index}
+                  key={ingridItem._id}
                   count={2}
                   price={ingridItem.price}
                   img={ingridItem.image}
                   name={ingridItem.name}
-                  id={ingridItem.id}
+                  id={ingridItem._id}
                   onClick={() => {
                     setSelectedItem(index);
                     handleOpenModal();
@@ -103,11 +92,12 @@ function BurgerIngredients(props) {
             {props.dataBurgers.map((ingridItem, index) => {
               return ingridItem.type === "sauce" ? (
                 <ItemOfBurger
+                  key={ingridItem._id}
                   count={2}
                   price={ingridItem.price}
                   img={ingridItem.image}
                   name={ingridItem.name}
-                  id={ingridItem.id}
+                  id={ingridItem._id}
                   onClick={() => {
                     setSelectedItem(index);
                     handleOpenModal();
@@ -123,6 +113,7 @@ function BurgerIngredients(props) {
             {props.dataBurgers.map((ingridItem, index) => {
               return ingridItem.type === "main" ? (
                 <ItemOfBurger
+                  key={ingridItem._id}
                   count={2}
                   price={ingridItem.price}
                   img={ingridItem.image}
@@ -138,9 +129,14 @@ function BurgerIngredients(props) {
           </div>
         </div>
         {modalVisible && (
-          <Modal setModalVisible={setModalVisible}>
+          <Modal onClose={() => setModalVisible(false)} title="Детали ингредиента">
             <IngredientDetails
-              ingridientDetail={props.dataBurgers[selectedItem]}
+              name={props.dataBurgers[selectedItem].name}
+              imageLarge={props.dataBurgers[selectedItem].image_large}
+              calories={props.dataBurgers[selectedItem].calories}
+              proteins={props.dataBurgers[selectedItem].proteins}
+              fat={props.dataBurgers[selectedItem].fat}
+              carbohydrates={props.dataBurgers[selectedItem].carbohydrates}
             />
           </Modal>
         )}
@@ -152,5 +148,5 @@ function BurgerIngredients(props) {
 export default BurgerIngredients;
 
 BurgerIngredients.propTypes = {
-  dataBurgers: PropTypes.arrayOf(ServerDataTypes.isRequired).isRequired
-}
+  dataBurgers: PropTypes.arrayOf(ServerDataTypes.isRequired).isRequired,
+};

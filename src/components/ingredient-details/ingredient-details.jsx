@@ -1,42 +1,44 @@
 import React from "react";
 import PropTypes from "prop-types";
 import styles from "./ingredient-details.module.css";
-import ServerDataTypes from "../../utils/data-format";
 
 export default function IngredientDetails(props) {
   return (
     <div className={styles.content}>
-      <img
-        src={props.ingridientDetail.image_large}
-        alt={props.ingridientDetail.name}
-      />
-      <h2 className="text text_type_main-medium">
-        {props.ingridientDetail.name}
-      </h2>
-      <div>
+      <img src={props.imageLarge} alt={props.name} />
+      <h2 className="text text_type_main-medium pt-4">{props.name}</h2>
+      <div className={styles.ingrid_info}>
         <div>
-          <div className="text text_type_main-default">Калории, ккал</div>
-          <div className="text text_type_digits-medium">
-            {props.ingridientDetail.calories}
-          </div>
+          <span className="text text_type_main-small text_color_inactive">
+            Калории, ккал
+          </span>
+          <span className="text text_type_digits-default text_color_inactive">
+            {props.calories}
+          </span>
         </div>
         <div>
-          <div className="text text_type_main-default">Белки, г</div>
-          <div className="text text_type_digits-medium">
-            {props.ingridientDetail.proteins}
-          </div>
+          <span className="text text_type_main-small text_color_inactive">
+            Белки, г
+          </span>
+          <span className="text text_type_digits-default text_color_inactive">
+            {props.proteins}
+          </span>
         </div>
         <div>
-          <div className="text text_type_main-default">Жиры, г</div>
-          <div className="text text_type_digits-medium">
-            {props.ingridientDetail.fat}
-          </div>
+          <span className="text text_type_main-small text_color_inactive">
+            Жиры, г
+          </span>
+          <span className="text text_type_digits-default text_color_inactive">
+            {props.fat}
+          </span>
         </div>
         <div>
-          <div className="text text_type_main-default">Углеводы, г</div>
-          <div className="text text_type_digits-medium">
-            {props.ingridientDetail.carbohydrates}
-          </div>
+          <span className="text text_type_main-small text_color_inactive">
+            Углеводы, г
+          </span>
+          <span className="text text_type_digits-default text_color_inactive">
+            {props.carbohydrates}
+          </span>
         </div>
       </div>
     </div>
@@ -44,5 +46,10 @@ export default function IngredientDetails(props) {
 }
 
 IngredientDetails.propTypes = {
-  dataBurgers: PropTypes.instanceOf(ServerDataTypes.isRequired).isRequired,
+  imageLarge: PropTypes.string.isRequired,
+  name: PropTypes.string.isRequired,
+  calories: PropTypes.number.isRequired,
+  proteins: PropTypes.number.isRequired,
+  fat: PropTypes.number.isRequired,
+  carbohydrates: PropTypes.number.isRequired,
 };

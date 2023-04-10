@@ -1,6 +1,5 @@
 import React from "react";
-// import PropTypes from "prop-types";
-// import { orderPropType } from "../utils/prop-type";
+import PropTypes from "prop-types";
 import styles from "./order-details.module.css";
 import { CheckMarkIcon } from "@ya.praktikum/react-developer-burger-ui-components";
 
@@ -26,8 +25,6 @@ export default function OrderDetails(props) {
   );
 }
 
-// OrderDetails.propTypes = {
-//     order: orderPropType.isRequired,
-//     visible: PropTypes.bool.isRequired,
-//     onCancel: PropTypes.func.isRequired,
-// }
+OrderDetails.propTypes = {
+  orderNum: PropTypes.string.isRequired,
+};

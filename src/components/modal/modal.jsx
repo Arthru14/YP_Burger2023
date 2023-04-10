@@ -1,12 +1,13 @@
 import React from "react";
 import ReactDOM from "react-dom";
+import PropTypes from "prop-types";
 import { CloseIcon } from "@ya.praktikum/react-developer-burger-ui-components";
 import ModalOverlay from "../modal-overlay/modal-overlay";
 import styles from "./modal.module.css";
 
 export default function Modal(props) {
   React.useEffect(() => {
-    const escFunc = (e) => e.key === "Escape" && props.setModalVisible(false);
+    const escFunc = (e) => e.key === "Escape" && props.onClose();
     document.addEventListener("keydown", escFunc);
 
     return () => {
@@ -16,20 +17,22 @@ export default function Modal(props) {
 
   return ReactDOM.createPortal(
     <>
-      <ModalOverlay onClick={props.setModalVisible} />
+      <ModalOverlay onClick={props.onClose} />
       <div
-        className="m-10"
         onClick={() => {
-          props.setModalVisible(false);
+          props.onClose();
         }}
       >
         <div
-          className={styles.modal_window}
+          className={`${styles.modal_window} p-10`}
           onClick={(e) => e.stopPropagation()}
         >
-          <span onClick={() => props.setModalVisible(false)}>
-            <CloseIcon type="secondary" />
-          </span>
+          <div className={styles.title}>
+            <span className="text text_type_main-medium">{props.title}</span>
+            <span onClick={() => props.onClose()}>
+              <CloseIcon type="secondary" />
+            </span>
+          </div>
           {props.children}
         </div>
       </div>
@@ -37,3 +40,7 @@ export default function Modal(props) {
     document.getElementById("react-modals")
   );
 }
+
+Modal.propTypes = {
+  title: PropTypes.string,
+};

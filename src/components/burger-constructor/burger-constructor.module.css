@@ -27,7 +27,32 @@
   align-items: end;
   width: 100%;
   height: calc(100% - 240px);
+  overflow: hidden;
+}
+
+.burger_inrid_inner_list {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  align-items: center;
+  width: 100%;
+  height: calc(100% - 160px);
   overflow: auto;
+  overflow-x: hidden;
+  scrollbar-color: #8585ad #2f2f37;
+  scrollbar-width: thin;
+}
+
+.burger_inrid_inner_list::-webkit-scrollbar {
+  width: 12px;
+}
+.burger_inrid_inner_list::-webkit-scrollbar-track {
+  background: #2f2f37;
+}
+.burger_inrid_inner_list::-webkit-scrollbar-thumb {
+  background: #8585ad;
+  border: 3px solid #2f2f37;
+  border-radius: 6px;
 }
 
 .burger_inrid_list_item {

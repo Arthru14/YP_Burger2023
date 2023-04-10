@@ -33,3 +33,18 @@
   width: 240px;
   height: 120px;
 }
+
+.tab_main {
+  display: flex;
+  flex-direction: row;
+  flex-wrap: nowrap;
+}
+
+.price_out_main {
+  display: flex;
+  align-items: center;
+}
+
+.item_of_burger {
+  position: relative;
+}

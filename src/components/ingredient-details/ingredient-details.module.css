@@ -14,3 +14,22 @@
 .order_second_text {
   color: #8585ad;
 }
+.content img {
+  height: 240px;
+}
+
+.ingrid_info {
+  display: flex;
+  flex-direction: row;
+  flex-wrap: nowrap;
+  justify-content: space-between;
+  padding-top: 32px;
+  padding-bottom: 20px;
+}
+
+.ingrid_info div {
+  width: 120px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}

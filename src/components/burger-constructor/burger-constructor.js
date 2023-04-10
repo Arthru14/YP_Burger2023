@@ -10,13 +10,20 @@ import OrderDetails from "../order-details/order-details";
 import ServerDataTypes from "../../utils/data-format";
 
 function BurgerComponentItem(props) {
+  let ingridName = props.name;
+  if (props.type === "top") {
+    ingridName += " (верх)";
+  } else if (props.type === "bottom") {
+    ingridName += " (низ)";
+  }
+
   return (
     <div className={`${styles.burger_inrid_list_item} pr-4 pl-4`}>
       {props.dragIcon && <DragIcon type="primary" />}
       <ConstructorElement
         type={props.type}
         isLocked={props.isLocked}
-        text={props.name}
+        text={ingridName}
         price={props.price}
         thumbnail={props.thumbnail}
       />
@@ -26,7 +33,7 @@ function BurgerComponentItem(props) {
 
 function BurgerComponentsList(props) {
   return (
-    <div className={`${styles.burger_inrid_list} custom-scroll`}>
+    <div className={styles.burger_inrid_list}>
       <BurgerComponentItem
         type="top"
         name={props.dataBurgers[0].name}
@@ -34,47 +41,24 @@ function BurgerComponentsList(props) {
         thumbnail={props.dataBurgers[0].image}
         isLocked
       />
-      <BurgerComponentItem
-        name={props.dataBurgers[2].name}
-        price={props.dataBurgers[2].price}
-        thumbnail={props.dataBurgers[2].image}
-        dragIcon
-      />
-      <BurgerComponentItem
-        name={props.dataBurgers[5].name}
-        price={props.dataBurgers[5].price}
-        thumbnail={props.dataBurgers[5].image}
-        dragIcon
-      />
-      <BurgerComponentItem
-        name={props.dataBurgers[6].name}
-        price={props.dataBurgers[6].price}
-        thumbnail={props.dataBurgers[6].image}
-        dragIcon
-      />
-      <BurgerComponentItem
-        name={props.dataBurgers[7].name}
-        price={props.dataBurgers[7].price}
-        thumbnail={props.dataBurgers[7].image}
-        dragIcon
-      />
-      <BurgerComponentItem
-        name={props.dataBurgers[11].name}
-        price={props.dataBurgers[11].price}
-        thumbnail={props.dataBurgers[11].image}
-        dragIcon
-      />
-      <BurgerComponentItem
-        name={props.dataBurgers[13].name}
-        price={props.dataBurgers[13].price}
-        thumbnail={props.dataBurgers[13].image}
-        dragIcon
-      />
+      <div className={styles.burger_inrid_inner_list}>
+        {props.dataBurgers.map((ingridItem) => {
+          return ingridItem.type !== "bun" ? (
+            <BurgerComponentItem
+              name={ingridItem.name}
+              price={ingridItem.price}
+              thumbnail={ingridItem.image}
+              key={ingridItem._id}
+              dragIcon
+            />
+          ) : null;
+        })}
+      </div>
       <BurgerComponentItem
         type="bottom"
-        name={props.dataBurgers[1].name}
-        price={props.dataBurgers[1].price}
-        thumbnail={props.dataBurgers[1].image}
+        name={props.dataBurgers[0].name}
+        price={props.dataBurgers[0].price}
+        thumbnail={props.dataBurgers[0].image}
         isLocked
       />
       {/* <div className={`${styles.burger_inrid_list_item} pr-4 pl-4`}>
@@ -96,10 +80,6 @@ function PlaceOrder(props) {
     setModalVisible(true);
   };
 
-  const handleCloseModal = () => {
-    setModalVisible(false);
-  };
-
   return (
     <div className={`${styles.place_order} pt-10 pr-4 pl-4`}>
       {props.price > 0 ? (
@@ -119,7 +99,7 @@ function PlaceOrder(props) {
             Оформить заказ
           </Button>
           {modalVisible && (
-            <Modal setModalVisible={setModalVisible}>
+            <Modal onClose={() => setModalVisible(false)}>
               <OrderDetails orderNum="034536" />
             </Modal>
           )}
