@@ -1,0 +1,64 @@
+.header {
+  display: flex;
+  justify-content: center;
+  height: 88px;
+  width: 100%;
+  top: 40px;
+  background-color: #1c1c21;
+}
+
+.wrapper {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  width: 1240px;
+}
+
+.navMenu {
+  display: flex;
+  justify-content: start;
+  width: 33%;
+}
+
+.navLogo {
+  display: flex;
+  justify-content: center;
+  width: 33%;
+}
+
+.navLogin {
+  display: flex;
+  justify-content: end;
+  width: 33%;
+}
+
+.navLogin a {
+  text-decoration: none;
+  display: flex;
+  align-items: center;
+}
+
+.nav {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.ulhr {
+  display: flex;
+  align-items: center;
+  margin: 0;
+  padding: 4px;
+  list-style-type: none;
+}
+
+.ulhr li {
+  margin-right: 4px;
+  padding: 4px;
+}
+
+.ulhr > li > a {
+  text-decoration: none;
+  display: flex;
+  align-items: center;
+}

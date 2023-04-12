@@ -1,0 +1,50 @@
+.wrapper {
+  display: flex;
+  flex-direction: column;
+  width: 608px;
+  height: calc(100% - 40px);
+  overflow: hidden;
+  margin-bottom: 40px;
+}
+
+.ingridList {
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+  width: 100%;
+  overflow: auto;
+}
+
+.ingrid {
+  display: flex;
+  flex-wrap: wrap;
+}
+
+.ingridItem {
+  display: flex;
+  flex-direction: column;
+  justify-content: start;
+  align-items: center;
+  width: 272px;
+  height: 208px;
+}
+
+.ingridItem > img {
+  width: 240px;
+  height: 120px;
+}
+
+.tab_main {
+  display: flex;
+  flex-direction: row;
+  flex-wrap: nowrap;
+}
+
+.price_out_main {
+  display: flex;
+  align-items: center;
+}
+
+.item_of_burger {
+  position: relative;
+}
