@@ -19,22 +19,16 @@ export default function Modal(props) {
     <>
       <ModalOverlay onClick={props.onClose} />
       <div
-        onClick={() => {
-          props.onClose();
-        }}
+        className={`${styles.modal_window} p-10`}
+        onClick={(e) => e.stopPropagation()}
       >
-        <div
-          className={`${styles.modal_window} p-10`}
-          onClick={(e) => e.stopPropagation()}
-        >
-          <div className={styles.title}>
-            <span className="text text_type_main-medium">{props.title}</span>
-            <span onClick={() => props.onClose()}>
-              <CloseIcon type="secondary" />
-            </span>
-          </div>
-          {props.children}
+        <div className={styles.title}>
+          <span className="text text_type_main-medium">{props.title}</span>
+          <span onClick={props.onClose}>
+            <CloseIcon type="secondary" />
+          </span>
         </div>
+        {props.children}
       </div>
     </>,
     document.getElementById("react-modals")
@@ -43,4 +37,5 @@ export default function Modal(props) {
 
 Modal.propTypes = {
   title: PropTypes.string,
+  onClose: PropTypes.func,
 };
