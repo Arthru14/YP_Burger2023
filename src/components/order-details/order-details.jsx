@@ -6,7 +6,9 @@ import { CheckMarkIcon } from "@ya.praktikum/react-developer-burger-ui-component
 export default function OrderDetails(props) {
   return (
     <div className={styles.content}>
-      <h1 className="text text_type_digits-large mb-8">{props.orderNum}</h1>
+      <h1 className="text text_type_digits-large mb-8">
+        {props.orderNum.toString().padStart(6, "0")}
+      </h1>
       <div className="text text_type_main-medium mb-15">
         <span className={styles.order_name}>идентификатор заказа</span>
       </div>
@@ -26,5 +28,5 @@ export default function OrderDetails(props) {
 }
 
 OrderDetails.propTypes = {
-  orderNum: PropTypes.string.isRequired,
+  orderNum: PropTypes.number.isRequired,
 };

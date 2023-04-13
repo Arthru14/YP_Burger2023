@@ -11,7 +11,7 @@ import ServerDataTypes from "../../utils/data-format";
 import { IngridContext } from "../services/ingrid-context";
 import { TotalPriceContext } from "../services/total-price";
 
-const bunId = "60d3b41abdacab0026a733c7";
+const idBuns = "60d3b41abdacab0026a733c7";
 const idItemsOfBurger = [
   "60d3b41abdacab0026a733c8",
   "60d3b41abdacab0026a733c9",
@@ -19,6 +19,8 @@ const idItemsOfBurger = [
   "60d3b41abdacab0026a733cc",
   "60d3b41abdacab0026a733cd",
 ];
+
+const orderUrl = "https://norma.nomoreparties.space/api/orders";
 
 function BurgerComponentItem(props) {
   let ingridName = props.name;
@@ -48,9 +50,9 @@ function BurgerComponentsList(props) {
     <div className={styles.burger_inrid_list}>
       <BurgerComponentItem
         type="top"
-        name={props.dataBurgers.find((item) => item._id === bunId).name}
-        price={props.dataBurgers.find((item) => item._id === bunId).price}
-        thumbnail={props.dataBurgers.find((item) => item._id === bunId).image}
+        name={props.dataBurgers.find((item) => item._id === idBuns).name}
+        price={props.dataBurgers.find((item) => item._id === idBuns).price}
+        thumbnail={props.dataBurgers.find((item) => item._id === idBuns).image}
         isLocked
       />
       <div className={styles.burger_inrid_inner_list}>
@@ -76,9 +78,9 @@ function BurgerComponentsList(props) {
       </div>
       <BurgerComponentItem
         type="bottom"
-        name={props.dataBurgers.find((item) => item._id === bunId).name}
-        price={props.dataBurgers.find((item) => item._id === bunId).price}
-        thumbnail={props.dataBurgers.find((item) => item._id === bunId).image}
+        name={props.dataBurgers.find((item) => item._id === idBuns).name}
+        price={props.dataBurgers.find((item) => item._id === idBuns).price}
+        thumbnail={props.dataBurgers.find((item) => item._id === idBuns).image}
         isLocked
       />
     </div>
@@ -88,6 +90,7 @@ function BurgerComponentsList(props) {
 function PlaceOrder(props) {
   const [modalVisible, setModalVisible] = useState(false);
   const { totalPrice, setTotalPrice } = useContext(TotalPriceContext);
+  const [orderNum, setOrderNum] = useState(0);
   const burgerData = useContext(IngridContext);
 
   useEffect(() => {
@@ -99,14 +102,65 @@ function PlaceOrder(props) {
     });
     sumPrice +=
       2 *
-      burgerData.find((ItemOfBurgerData) => ItemOfBurgerData._id === bunId)
+      burgerData.find((ItemOfBurgerData) => ItemOfBurgerData._id === idBuns)
         .price;
     setTotalPrice(sumPrice);
   }, [burgerData, setTotalPrice]);
 
-  const handleOpenModal = () => {
-    setModalVisible(true);
+  // const getOrderNum = () =>
+  //   fetch("https://norma.nomoreparties.space/api/orders", {
+  //     method: "POST",
+  //     cache: "no-cache",
+  //     headers: {
+  //       "Content-Type": "application/json",
+  //     },
+  //     body: JSON.stringify([idBuns, ...idItemsOfBurger]),
+  //   }).then((res) => {
+  //     if (res.ok) return res.json();
+  //     throw new Error("Server error");
+  //   });
+
+  // console.log(getOrderNum());
+
+  const sendDataToOrder = async (url, items) => {
+    const data = { ingredients: items };
+
+    const res = await fetch(url, {
+      method: "POST",
+      headers: {
+        Accept: "application/json",
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify(data),
+    });
+
+    if (res.ok) {
+      return await res.json();
+    } else {
+      throw new Error(res.status.toString());
+    }
   };
+
+  const handleOpenModal = async () => {
+    try {
+      const data = await sendDataToOrder(orderUrl, [
+        idBuns,
+        ...idItemsOfBurger,
+      ]);
+      if (data.success) {
+        setOrderNum(data.order.number);
+        setModalVisible(true);
+      } else {
+        console.log(data.message);
+      }
+    } catch (error) {
+      console.log(error.message);
+    }
+  };
+
+  // const handleOpenModal = () => {
+  //   setModalVisible(true);
+  // };
 
   return (
     <div className={`${styles.place_order} pt-10 pr-4 pl-4`}>
@@ -128,7 +182,7 @@ function PlaceOrder(props) {
           </Button>
           {modalVisible && (
             <Modal onClose={() => setModalVisible(false)}>
-              <OrderDetails orderNum="034536" />
+              <OrderDetails orderNum={orderNum} />
             </Modal>
           )}
         </>
