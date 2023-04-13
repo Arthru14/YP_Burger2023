@@ -1,14 +1,17 @@
-import React from "react";
+import React, {useState} from "react";
 import styles from "./app.module.css";
 import AppHeader from "../app-header/app-header";
 import BurgerIngredients from "../burger-ingredients/burger-ingredients";
 import BurgerConstructor from "../burger-constructor/burger-constructor";
+import { IngridContext } from "../services/ingrid-context";
+import { TotalPriceContext } from "../services/total-price";
 
 const urlBurgerData = "https://norma.nomoreparties.space/api/ingredients";
 
 function App() {
-  const [burgerData, setBurgerData] = React.useState();
-  const [burgerDataLoading, setBurgerDataLoading] = React.useState(false);
+  const [burgerData, setBurgerData] = useState();
+  const [burgerDataLoading, setBurgerDataLoading] = useState(false);
+  const [totalPrice, setTotalPrice] = useState(0);
 
   React.useEffect(() => {
     const getBurgerData = () => {
@@ -32,8 +35,14 @@ function App() {
       <AppHeader />
       <main className={styles.wrapper}>
         <div className={styles.content}>
-          {burgerDataLoading && <BurgerIngredients dataBurgers={burgerData} />}
-          {burgerDataLoading && <BurgerConstructor dataBurgers={burgerData} />}
+          {burgerDataLoading && (
+            <TotalPriceContext.Provider value={{totalPrice, setTotalPrice}}>
+              <IngridContext.Provider value={burgerData}>
+                <BurgerIngredients />
+                <BurgerConstructor value={burgerData} />
+              </IngridContext.Provider>
+            </TotalPriceContext.Provider>
+          )}
         </div>
       </main>
     </>

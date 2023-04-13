@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useContext, useState, useEffect, useMemo } from "react";
 import PropTypes from "prop-types";
 import styles from "./burger-constructor.module.css";
 import { ConstructorElement } from "@ya.praktikum/react-developer-burger-ui-components";
@@ -8,6 +8,17 @@ import { DragIcon } from "@ya.praktikum/react-developer-burger-ui-components";
 import Modal from "../modal/modal";
 import OrderDetails from "../order-details/order-details";
 import ServerDataTypes from "../../utils/data-format";
+import { IngridContext } from "../services/ingrid-context";
+import { TotalPriceContext } from "../services/total-price";
+
+const bunId = "60d3b41abdacab0026a733c7";
+const idItemsOfBurger = [
+  "60d3b41abdacab0026a733c8",
+  "60d3b41abdacab0026a733c9",
+  "60d3b41abdacab0026a733ca",
+  "60d3b41abdacab0026a733cc",
+  "60d3b41abdacab0026a733cd",
+];
 
 function BurgerComponentItem(props) {
   let ingridName = props.name;
@@ -32,49 +43,66 @@ function BurgerComponentItem(props) {
 }
 
 function BurgerComponentsList(props) {
+  // console.log(props.dataBurgers.find((item) => item._id === bunId).name);
   return (
     <div className={styles.burger_inrid_list}>
       <BurgerComponentItem
         type="top"
-        name={props.dataBurgers[0].name}
-        price={props.dataBurgers[0].price}
-        thumbnail={props.dataBurgers[0].image}
+        name={props.dataBurgers.find((item) => item._id === bunId).name}
+        price={props.dataBurgers.find((item) => item._id === bunId).price}
+        thumbnail={props.dataBurgers.find((item) => item._id === bunId).image}
         isLocked
       />
       <div className={styles.burger_inrid_inner_list}>
-        {props.dataBurgers.map((ingridItem) => {
-          return ingridItem.type !== "bun" ? (
+        {idItemsOfBurger.map((ingridItem) => {
+          return (
             <BurgerComponentItem
-              name={ingridItem.name}
-              price={ingridItem.price}
-              thumbnail={ingridItem.image}
-              key={ingridItem._id}
+              name={
+                props.dataBurgers.find((item) => item._id === ingridItem).name
+              }
+              price={
+                props.dataBurgers.find((item) => item._id === ingridItem).price
+              }
+              thumbnail={
+                props.dataBurgers.find((item) => item._id === ingridItem).image
+              }
+              key={
+                props.dataBurgers.find((item) => item._id === ingridItem)._id
+              }
               dragIcon
             />
-          ) : null;
+          );
         })}
       </div>
       <BurgerComponentItem
         type="bottom"
-        name={props.dataBurgers[0].name}
-        price={props.dataBurgers[0].price}
-        thumbnail={props.dataBurgers[0].image}
+        name={props.dataBurgers.find((item) => item._id === bunId).name}
+        price={props.dataBurgers.find((item) => item._id === bunId).price}
+        thumbnail={props.dataBurgers.find((item) => item._id === bunId).image}
         isLocked
       />
-      {/* <div className={`${styles.burger_inrid_list_item} pr-4 pl-4`}>
-        <DragIcon type="primary" />
-        <ConstructorElement
-          text="Краторная булка N-200i (верх)"
-          price={50}
-          thumbnail={img}
-        />
-      </div> */}
     </div>
   );
 }
 
 function PlaceOrder(props) {
-  const [modalVisible, setModalVisible] = React.useState(false);
+  const [modalVisible, setModalVisible] = useState(false);
+  const { totalPrice, setTotalPrice } = useContext(TotalPriceContext);
+  const burgerData = useContext(IngridContext);
+
+  useEffect(() => {
+    let sumPrice = 0;
+    idItemsOfBurger.forEach((item) => {
+      sumPrice += burgerData.find(
+        (ItemOfBurgerData) => ItemOfBurgerData._id === item
+      ).price;
+    });
+    sumPrice +=
+      2 *
+      burgerData.find((ItemOfBurgerData) => ItemOfBurgerData._id === bunId)
+        .price;
+    setTotalPrice(sumPrice);
+  }, [burgerData, setTotalPrice]);
 
   const handleOpenModal = () => {
     setModalVisible(true);
@@ -82,11 +110,11 @@ function PlaceOrder(props) {
 
   return (
     <div className={`${styles.place_order} pt-10 pr-4 pl-4`}>
-      {props.price > 0 ? (
+      {totalPrice > 0 ? (
         <>
           <span className={`${styles.place_order_price} pr-10`}>
             <span className="text text_type_digits-default pr-4">
-              {props.price}
+              {totalPrice}
             </span>
             <CurrencyIcon type="primary" className="pr-10" />
           </span>
@@ -113,16 +141,18 @@ function PlaceOrder(props) {
   );
 }
 
-function BurgerConstructor(props) {
+function BurgerConstructor() {
+  const burgerData = useContext(IngridContext);
+
   return (
     <section className={`${styles.wrapper} pt-25`}>
-      <BurgerComponentsList dataBurgers={props.dataBurgers} />
+      <BurgerComponentsList dataBurgers={burgerData} />
       <PlaceOrder price="4255" />
     </section>
   );
 }
 
 BurgerConstructor.propTypes = {
-  dataBurgers: PropTypes.arrayOf(ServerDataTypes.isRequired).isRequired,
+  burgerData: PropTypes.arrayOf(ServerDataTypes.isRequired),
 };
 export default BurgerConstructor;

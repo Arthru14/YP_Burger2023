@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useContext } from "react";
 import PropTypes from "prop-types";
 import styles from "./burger-ingredients.module.css";
 import { Tab } from "@ya.praktikum/react-developer-burger-ui-components";
@@ -7,6 +7,7 @@ import { Counter } from "@ya.praktikum/react-developer-burger-ui-components";
 import Modal from "../modal/modal";
 import IngredientDetails from "../ingredient-details/ingredient-details";
 import ServerDataTypes from "../../utils/data-format";
+import { IngridContext } from "../services/ingrid-context";
 
 function Tabs() {
   const [current, setCurrent] = React.useState("one");
@@ -52,7 +53,9 @@ function ItemOfBurger(props) {
   );
 }
 
-function BurgerIngredients(props) {
+function BurgerIngredients() {
+  const burgerData = useContext(IngridContext);
+
   const [modalVisible, setModalVisible] = React.useState(false);
   const [selectedItem, setSelectedItem] = React.useState();
 
@@ -68,7 +71,7 @@ function BurgerIngredients(props) {
         <div id="bunDiv">
           <h2 className="text text_type_main-medium pt-10">Булки</h2>
           <div className={styles.ingrid}>
-            {props.dataBurgers.map((ingridItem, index) => {
+            {burgerData.map((ingridItem, index) => {
               return ingridItem.type === "bun" ? (
                 <ItemOfBurger
                   key={ingridItem._id}
@@ -89,7 +92,7 @@ function BurgerIngredients(props) {
         <div id="sauceDiv">
           <h2 className="text text_type_main-medium pt-2">Соусы</h2>
           <div className={styles.ingrid}>
-            {props.dataBurgers.map((ingridItem, index) => {
+            {burgerData.map((ingridItem, index) => {
               return ingridItem.type === "sauce" ? (
                 <ItemOfBurger
                   key={ingridItem._id}
@@ -110,7 +113,7 @@ function BurgerIngredients(props) {
         <div id="mainDiv">
           <h2 className="text text_type_main-medium pt-2">Начинки</h2>
           <div className={styles.ingrid}>
-            {props.dataBurgers.map((ingridItem, index) => {
+            {burgerData.map((ingridItem, index) => {
               return ingridItem.type === "main" ? (
                 <ItemOfBurger
                   key={ingridItem._id}
@@ -129,14 +132,17 @@ function BurgerIngredients(props) {
           </div>
         </div>
         {modalVisible && (
-          <Modal onClose={() => setModalVisible(false)} title="Детали ингредиента">
+          <Modal
+            onClose={() => setModalVisible(false)}
+            title="Детали ингредиента"
+          >
             <IngredientDetails
-              name={props.dataBurgers[selectedItem].name}
-              imageLarge={props.dataBurgers[selectedItem].image_large}
-              calories={props.dataBurgers[selectedItem].calories}
-              proteins={props.dataBurgers[selectedItem].proteins}
-              fat={props.dataBurgers[selectedItem].fat}
-              carbohydrates={props.dataBurgers[selectedItem].carbohydrates}
+              name={burgerData[selectedItem].name}
+              imageLarge={burgerData[selectedItem].image_large}
+              calories={burgerData[selectedItem].calories}
+              proteins={burgerData[selectedItem].proteins}
+              fat={burgerData[selectedItem].fat}
+              carbohydrates={burgerData[selectedItem].carbohydrates}
             />
           </Modal>
         )}
@@ -148,5 +154,5 @@ function BurgerIngredients(props) {
 export default BurgerIngredients;
 
 BurgerIngredients.propTypes = {
-  dataBurgers: PropTypes.arrayOf(ServerDataTypes.isRequired).isRequired,
+  burgerData: PropTypes.arrayOf(ServerDataTypes.isRequired),
 };
