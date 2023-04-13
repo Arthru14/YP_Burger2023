@@ -11,6 +11,7 @@ import ServerDataTypes from "../../utils/data-format";
 import { IngridContext } from "../services/ingrid-context";
 import { TotalPriceContext } from "../services/total-price";
 
+// Данные по списку состава бургера в виде массива
 const idBuns = "60d3b41abdacab0026a733c7";
 const idItemsOfBurger = [
   "60d3b41abdacab0026a733c8",
@@ -45,7 +46,6 @@ function BurgerComponentItem(props) {
 }
 
 function BurgerComponentsList(props) {
-  // console.log(props.dataBurgers.find((item) => item._id === bunId).name);
   return (
     <div className={styles.burger_inrid_list}>
       <BurgerComponentItem
@@ -107,21 +107,6 @@ function PlaceOrder(props) {
     setTotalPrice(sumPrice);
   }, [burgerData, setTotalPrice]);
 
-  // const getOrderNum = () =>
-  //   fetch("https://norma.nomoreparties.space/api/orders", {
-  //     method: "POST",
-  //     cache: "no-cache",
-  //     headers: {
-  //       "Content-Type": "application/json",
-  //     },
-  //     body: JSON.stringify([idBuns, ...idItemsOfBurger]),
-  //   }).then((res) => {
-  //     if (res.ok) return res.json();
-  //     throw new Error("Server error");
-  //   });
-
-  // console.log(getOrderNum());
-
   const sendDataToOrder = async (url, items) => {
     const data = { ingredients: items };
 
@@ -157,10 +142,6 @@ function PlaceOrder(props) {
       console.log(error.message);
     }
   };
-
-  // const handleOpenModal = () => {
-  //   setModalVisible(true);
-  // };
 
   return (
     <div className={`${styles.place_order} pt-10 pr-4 pl-4`}>
