@@ -37,7 +37,7 @@
   align-items: center;
   width: 100%;
   height: calc(100% - 160px);
-  overflow: auto;
+  overflow: scroll;
   overflow-x: hidden;
   scrollbar-color: #8585ad #2f2f37;
   scrollbar-width: thin;
