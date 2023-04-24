@@ -4,14 +4,14 @@ import styles from "./app.module.css";
 import AppHeader from "../app-header/app-header";
 import BurgerIngredients from "../burger-ingredients/burger-ingredients";
 import BurgerConstructor from "../burger-constructor/burger-constructor";
-import { getBurgerData } from "../services/actions/app";
+import { getBurgerData } from "../../services/actions/app";
 
 function App() {
   const dispatch = useDispatch();
   const { isBurgerDataLoaded } = useSelector(
     (store) => store.ingredientReducer
   );
-  
+
   useEffect(() => {
     dispatch(getBurgerData());
   }, [dispatch]);

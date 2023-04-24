@@ -12,7 +12,7 @@ import { Provider } from "react-redux";
 import { DndProvider } from "react-dnd";
 import { HTML5Backend } from "react-dnd-html5-backend";
 import App from "./components/app/app";
-import { rootReducer } from "./components/services/reducers/index";
+import { rootReducer } from "./services/reducers/index";
 
 const composeEnhancers =
   typeof window === "object" && window.__REDUX_DEVTOOLS_EXTENSION_COMPOSE__

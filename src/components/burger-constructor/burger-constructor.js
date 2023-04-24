@@ -1,4 +1,4 @@
-import { useContext, useState, useEffect, useMemo } from "react";
+import { useState, useEffect, useMemo, useRef } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import PropTypes from "prop-types";
 import styles from "./burger-constructor.module.css";
@@ -15,13 +15,13 @@ import {
   MAKE_ORDER,
   MAKE_ORDER_FAILED,
   MAKE_ORDER_SUCCESS,
+  MOVE_COMPONENT_BURGER,
   REMOVE_INGREDIENT,
-  SET_TOTAL_PRICE,
-} from "../services/actions/burger-constructor";
+} from "../../services/actions/burger-constructor";
 import NoItem from "../../images/no-item.png";
-import { useDrop } from "react-dnd";
-
-const orderUrl = "https://norma.nomoreparties.space/api/orders";
+import { useDrag, useDrop } from "react-dnd";
+import requestToServer, { BASE_URL, ORDER_ENDPOINT } from "../../utils/api";
+import { useModal } from "../../hooks/useModal";
 
 function BurgerComponentItem(props) {
   const dispatch = useDispatch();
@@ -31,13 +31,31 @@ function BurgerComponentItem(props) {
   } else if (props.type === "bottom") {
     ingridName += " (низ)";
   }
+  const { id } = props;
+  const ref = useRef(null);
 
+  const [, dragRef] = useDrag({
+    type: "structureOfBurger",
+    item: { id },
+  });
+
+  const [, dropRef] = useDrop({
+    accept: "structureOfBurger",
+    drop(item) {
+      dispatch({ type: MOVE_COMPONENT_BURGER, fromId: item.id, toId: id });
+    },
+  });
+
+  dragRef(dropRef(ref));
   const onRemoveItemHandle = () => {
     dispatch({ id: props.id, type: REMOVE_INGREDIENT, price: props.price });
   };
 
   return (
-    <div className={`${styles.burger_inrid_list_item} pr-4 pl-4`}>
+    <div
+      className={`${styles.burger_inrid_list_item} pr-4 pl-4`}
+      ref={props.dragIcon ? ref : null}
+    >
       {props.dragIcon && <DragIcon type="primary" />}
       <ConstructorElement
         type={props.type}
@@ -66,7 +84,8 @@ function BurgerComponentsList() {
         type: ADD_BUN,
         price: item.price,
         priceBefore: isBunAdded
-          ? burgerData.find((item) => item._id === addedIngreds[0]).price
+          ? burgerData.find((item) => item._id === addedIngreds[0].ingridId)
+              .price
           : 0,
       });
     } else {
@@ -87,17 +106,20 @@ function BurgerComponentsList() {
         type="top"
         name={
           isBunAdded
-            ? burgerData.find((item) => item._id === addedIngreds[0]).name
+            ? burgerData.find((item) => item._id === addedIngreds[0].ingridId)
+                .name
             : "Выберите булку"
         }
         price={
           isBunAdded
-            ? burgerData.find((item) => item._id === addedIngreds[0]).price
+            ? burgerData.find((item) => item._id === addedIngreds[0].ingridId)
+                .price
             : ""
         }
         thumbnail={
           isBunAdded
-            ? burgerData.find((item) => item._id === addedIngreds[0]).image
+            ? burgerData.find((item) => item._id === addedIngreds[0].ingridId)
+                .image
             : NoItem
         }
         isLocked={isBunAdded}
@@ -107,14 +129,21 @@ function BurgerComponentsList() {
           if (isBunAdded && (index === 0 || index === addedIngreds.length - 1))
             return "";
           return (
-            index && (
+            ingridItem.uniqueId && (
               <BurgerComponentItem
-                name={burgerData.find((item) => item._id === ingridItem).name}
-                price={burgerData.find((item) => item._id === ingridItem).price}
-                thumbnail={
-                  burgerData.find((item) => item._id === ingridItem).image
+                name={
+                  burgerData.find((item) => item._id === ingridItem.ingridId)
+                    .name
                 }
-                key={index}
+                price={
+                  burgerData.find((item) => item._id === ingridItem.ingridId)
+                    .price
+                }
+                thumbnail={
+                  burgerData.find((item) => item._id === ingridItem.ingridId)
+                    .image
+                }
+                key={ingridItem.uniqueId}
                 id={index}
                 dragIcon
               />
@@ -127,21 +156,24 @@ function BurgerComponentsList() {
         name={
           isBunAdded
             ? burgerData.find(
-                (item) => item._id === addedIngreds[addedIngreds.length - 1]
+                (item) =>
+                  item._id === addedIngreds[addedIngreds.length - 1].ingridId
               ).name
             : "Выберите булку"
         }
         price={
           isBunAdded
             ? burgerData.find(
-                (item) => item._id === addedIngreds[addedIngreds.length - 1]
+                (item) =>
+                  item._id === addedIngreds[addedIngreds.length - 1].ingridId
               ).price
             : ""
         }
         thumbnail={
           isBunAdded
             ? burgerData.find(
-                (item) => item._id === addedIngreds[addedIngreds.length - 1]
+                (item) =>
+                  item._id === addedIngreds[addedIngreds.length - 1].ingridId
               ).image
             : NoItem
         }
@@ -152,40 +184,31 @@ function BurgerComponentsList() {
 }
 
 function PlaceOrder(props) {
-  const [modalVisible, setModalVisible] = useState(false);
+  const { isModalOpen, openModal, closeModal } = useModal();
+
   const dispatch = useDispatch();
   const { addedIngreds, orderNum } = useSelector(
     (store) => store.constructorsReducer
   );
 
-  const sendDataToOrder = async (url, items) => {
-    const data = { ingredients: items };
-
-    const res = await fetch(url, {
-      method: "POST",
-      headers: {
-        Accept: "application/json",
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify(data),
-    });
-
-    if (res.ok) {
-      return await res.json();
-    } else {
-      throw new Error(res.status.toString());
-    }
-  };
-
   const handleOpenModal = async () => {
     try {
       dispatch({ type: MAKE_ORDER });
 
-      const data = await sendDataToOrder(orderUrl, [...addedIngreds]);
+      const data = await requestToServer(ORDER_ENDPOINT, {
+        method: "POST",
+        headers: {
+          Accept: "application/json",
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          ingredients: addedIngreds.map(({ ingridId }) => ingridId),
+        }),
+      });
+
       if (data.success) {
         dispatch({ type: MAKE_ORDER_SUCCESS, orderNum: data.order.number });
-        // setOrderNum(data.order.number);
-        setModalVisible(true);
+        openModal();
       } else {
         dispatch({ type: MAKE_ORDER_FAILED });
         console.log(data.message);
@@ -213,8 +236,8 @@ function PlaceOrder(props) {
           >
             Оформить заказ
           </Button>
-          {modalVisible && (
-            <Modal onClose={() => setModalVisible(false)}>
+          {isModalOpen && (
+            <Modal onClose={closeModal}>
               <OrderDetails orderNum={orderNum} />
             </Modal>
           )}

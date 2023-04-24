@@ -6,11 +6,12 @@ import {
   ADD_BUN,
   MAKE_ORDER_SUCCESS,
   SET_TOTAL_PRICE,
+  MOVE_COMPONENT_BURGER,
 } from "../actions/burger-constructor";
-import { TotalPriceContext } from "../total-price";
+import { v4 as uuid } from "uuid";
 
 const initialState = {
-  addedIngreds: [],
+  addedIngreds: [{}],
   isBunAdded: false,
   orderNum: 0,
   currentOrderFailed: false,
@@ -25,8 +26,8 @@ export const burgerConstructorReducer = (state = initialState, action) => {
         const newItems = [...state.addedIngreds];
         newItems.pop();
         newItems.shift();
-        newItems.push(action.id);
-        newItems.unshift(action.id);
+        newItems.push({ uniqueId: uuid(), ingridId: action.id });
+        newItems.unshift({ uniqueId: uuid(), ingridId: action.id });
         return {
           ...state,
           addedIngreds: newItems,
@@ -36,8 +37,12 @@ export const burgerConstructorReducer = (state = initialState, action) => {
       } else {
         return {
           ...state,
+          uniqueId: uuid(),
           isBunAdded: true,
-          addedIngreds: [action.id, ...state.addedIngreds, action.id],
+          addedIngreds: [
+            { uniqueId: uuid(), ingridId: action.id },
+            { uniqueId: uuid(), ingridId: action.id },
+          ],
           totalPrice:
             state.totalPrice - 2 * action.priceBefore + 2 * action.price,
         };
@@ -45,7 +50,10 @@ export const burgerConstructorReducer = (state = initialState, action) => {
     case ADD_INGREDIENT:
       if (state.isBunAdded) {
         const newItems = [...state.addedIngreds];
-        newItems.splice(state.addedIngreds.length - 1, 0, action.id);
+        newItems.splice(state.addedIngreds.length - 1, 0, {
+          uniqueId: uuid(),
+          ingridId: action.id,
+        });
         return {
           ...state,
           addedIngreds: newItems,
@@ -54,12 +62,22 @@ export const burgerConstructorReducer = (state = initialState, action) => {
       } else {
         return state;
       }
-    case REMOVE_INGREDIENT:
-      const newIngredients = [...state.addedIngreds];
-      newIngredients.splice(action.id, 1);
+    case MOVE_COMPONENT_BURGER: {
+      const newIngredList = [...state.addedIngreds];
+      const tmpVar = newIngredList[action.fromId];
+      newIngredList.splice(action.fromId, 1);
+      newIngredList.splice(action.toId, 0, tmpVar);
       return {
         ...state,
-        addedIngreds: newIngredients,
+        addedIngreds: newIngredList,
+      };
+    }
+    case REMOVE_INGREDIENT:
+      const newIngredList = [...state.addedIngreds];
+      newIngredList.splice(action.id, 1);
+      return {
+        ...state,
+        addedIngreds: newIngredList,
         totalPrice: state.totalPrice - action.price,
       };
     case SET_TOTAL_PRICE:

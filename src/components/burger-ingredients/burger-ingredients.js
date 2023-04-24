@@ -12,8 +12,9 @@ import IngredientDetails from "../ingredient-details/ingredient-details";
 import {
   CHANGE_SELECTED_INGREDIENT,
   CLEAR_SELECTED_INGREDIENT,
-} from "../services/actions/burger-ingredients";
+} from "../../services/actions/burger-ingredients";
 import { useDrag } from "react-dnd";
+import { useModal } from "../../hooks/useModal";
 
 function Tabs(props) {
   return (
@@ -50,7 +51,7 @@ function ItemOfBurger(props) {
   const addedIngreds = useSelector(
     (store) => store.constructorsReducer.addedIngreds
   );
-  const count = addedIngreds.filter((item) => item === id).length;
+  const count = addedIngreds.filter((item) => item.ingridId === id).length;
 
   return (
     <div
@@ -86,11 +87,13 @@ function BurgerIngredients() {
     (store) => store.ingredientReducer.selectedItem
   );
 
-  const [modalVisible, setModalVisible] = useState(false);
+  //const [modalVisible, setModalVisible] = useState(false);
+  const { isModalOpen, openModal, closeModal } = useModal();
+
   const [currentTab, setCurrentTab] = useState("one");
 
   const handleOpenModal = () => {
-    setModalVisible(true);
+    openModal();
   };
 
   const activeTab = () => {
@@ -185,10 +188,10 @@ function BurgerIngredients() {
             })}
           </div>
         </div>
-        {modalVisible && (
+        {isModalOpen && (
           <Modal
             onClose={() => {
-              setModalVisible(false);
+              closeModal();
               dispatch({ type: CLEAR_SELECTED_INGREDIENT });
             }}
             title="Детали ингредиента"
