@@ -1,6 +1,5 @@
 import { useState, useEffect, useMemo, useRef } from "react";
 import { useDispatch, useSelector } from "react-redux";
-import PropTypes from "prop-types";
 import styles from "./burger-constructor.module.css";
 import { ConstructorElement } from "@ya.praktikum/react-developer-burger-ui-components";
 import { Button } from "@ya.praktikum/react-developer-burger-ui-components";
@@ -8,20 +7,20 @@ import { CurrencyIcon } from "@ya.praktikum/react-developer-burger-ui-components
 import { DragIcon } from "@ya.praktikum/react-developer-burger-ui-components";
 import Modal from "../modal/modal";
 import OrderDetails from "../order-details/order-details";
-import ServerDataTypes from "../../utils/data-format";
-import {
-  ADD_BUN,
-  ADD_INGREDIENT,
-  MAKE_ORDER,
-  MAKE_ORDER_FAILED,
-  MAKE_ORDER_SUCCESS,
-  MOVE_COMPONENT_BURGER,
-  REMOVE_INGREDIENT,
-} from "../../services/actions/burger-constructor";
 import NoItem from "../../images/no-item.png";
 import { useDrag, useDrop } from "react-dnd";
 import requestToServer, { BASE_URL, ORDER_ENDPOINT } from "../../utils/api";
 import { useModal } from "../../hooks/useModal";
+import {
+  addBunToConstructor,
+  addIngridToConstructor,
+  makeOrder,
+  makeOrderFailed,
+  makeOrderSuccess,
+  moveComponentOfBurger,
+  removeComponentFromBurger,
+} from "../../services/actions/action-creator";
+import { getOrderFromServer } from "../../services/actions/get-order";
 
 function BurgerComponentItem(props) {
   const dispatch = useDispatch();
@@ -42,13 +41,13 @@ function BurgerComponentItem(props) {
   const [, dropRef] = useDrop({
     accept: "structureOfBurger",
     drop(item) {
-      dispatch({ type: MOVE_COMPONENT_BURGER, fromId: item.id, toId: id });
+      dispatch(moveComponentOfBurger(item.id, id));
     },
   });
 
   dragRef(dropRef(ref));
   const onRemoveItemHandle = () => {
-    dispatch({ id: props.id, type: REMOVE_INGREDIENT, price: props.price });
+    dispatch(removeComponentFromBurger(props.id, props.price));
   };
 
   return (
@@ -79,17 +78,18 @@ function BurgerComponentsList() {
 
   const onDropHandler = (item) => {
     if (item.isBun) {
-      dispatch({
-        id: item.id,
-        type: ADD_BUN,
-        price: item.price,
-        priceBefore: isBunAdded
-          ? burgerData.find((item) => item._id === addedIngreds[0].ingridId)
-              .price
-          : 0,
-      });
+      dispatch(
+        addBunToConstructor(
+          item.id,
+          item.price,
+          isBunAdded
+            ? burgerData.find((item) => item._id === addedIngreds[0].ingridId)
+                .price
+            : 0
+        )
+      );
     } else {
-      dispatch({ id: item.id, type: ADD_INGREDIENT, price: item.price });
+      dispatch(addIngridToConstructor(item.id, item.price));
     }
   };
 
@@ -187,35 +187,13 @@ function PlaceOrder(props) {
   const { isModalOpen, openModal, closeModal } = useModal();
 
   const dispatch = useDispatch();
-  const { addedIngreds, orderNum } = useSelector(
+  const { addedIngreds, orderNum, currentOrderIsLoading } = useSelector(
     (store) => store.constructorsReducer
   );
 
-  const handleOpenModal = async () => {
-    try {
-      dispatch({ type: MAKE_ORDER });
-
-      const data = await requestToServer(ORDER_ENDPOINT, {
-        method: "POST",
-        headers: {
-          Accept: "application/json",
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({
-          ingredients: addedIngreds.map(({ ingridId }) => ingridId),
-        }),
-      });
-
-      if (data.success) {
-        dispatch({ type: MAKE_ORDER_SUCCESS, orderNum: data.order.number });
-        openModal();
-      } else {
-        dispatch({ type: MAKE_ORDER_FAILED });
-        console.log(data.message);
-      }
-    } catch (error) {
-      console.log(error.message);
-    }
+  const handleOpenModal = () => {
+    dispatch(getOrderFromServer(addedIngreds));
+    !currentOrderIsLoading && openModal();
   };
 
   return (
@@ -238,7 +216,11 @@ function PlaceOrder(props) {
           </Button>
           {isModalOpen && (
             <Modal onClose={closeModal}>
-              <OrderDetails orderNum={orderNum} />
+              {!currentOrderIsLoading ? (
+                <OrderDetails orderNum={orderNum} />
+              ) : (
+                <p className="text text_type_main-medium">Загрузка данных...</p>
+              )}
             </Modal>
           )}
         </>

@@ -8,7 +8,6 @@ import {
   SET_TOTAL_PRICE,
   MOVE_COMPONENT_BURGER,
 } from "../actions/burger-constructor";
-import { v4 as uuid } from "uuid";
 
 const initialState = {
   addedIngreds: [{}],
@@ -26,8 +25,8 @@ export const burgerConstructorReducer = (state = initialState, action) => {
         const newItems = [...state.addedIngreds];
         newItems.pop();
         newItems.shift();
-        newItems.push({ uniqueId: uuid(), ingridId: action.id });
-        newItems.unshift({ uniqueId: uuid(), ingridId: action.id });
+        newItems.push({ uniqueId: action.uniqueId, ingridId: action.id });
+        newItems.unshift({ uniqueId: action.uniqueId, ingridId: action.id });
         return {
           ...state,
           addedIngreds: newItems,
@@ -37,11 +36,10 @@ export const burgerConstructorReducer = (state = initialState, action) => {
       } else {
         return {
           ...state,
-          uniqueId: uuid(),
           isBunAdded: true,
           addedIngreds: [
-            { uniqueId: uuid(), ingridId: action.id },
-            { uniqueId: uuid(), ingridId: action.id },
+            { uniqueId: action.uniqueId, ingridId: action.id },
+            { uniqueId: action.uniqueId, ingridId: action.id },
           ],
           totalPrice:
             state.totalPrice - 2 * action.priceBefore + 2 * action.price,
@@ -51,7 +49,7 @@ export const burgerConstructorReducer = (state = initialState, action) => {
       if (state.isBunAdded) {
         const newItems = [...state.addedIngreds];
         newItems.splice(state.addedIngreds.length - 1, 0, {
-          uniqueId: uuid(),
+          uniqueId: action.uniqueId,
           ingridId: action.id,
         });
         return {

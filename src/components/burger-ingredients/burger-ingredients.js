@@ -87,7 +87,6 @@ function BurgerIngredients() {
     (store) => store.ingredientReducer.selectedItem
   );
 
-  //const [modalVisible, setModalVisible] = useState(false);
   const { isModalOpen, openModal, closeModal } = useModal();
 
   const [currentTab, setCurrentTab] = useState("one");
