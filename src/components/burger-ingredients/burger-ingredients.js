@@ -71,64 +71,70 @@ function BurgerIngredients() {
         <div id="bunDiv">
           <h2 className="text text_type_main-medium pt-10">Булки</h2>
           <div className={styles.ingrid}>
-            {burgerData.map((ingridItem, index) => {
-              return ingridItem.type === "bun" ? (
-                <ItemOfBurger
-                  key={ingridItem._id}
-                  count={2}
-                  price={ingridItem.price}
-                  img={ingridItem.image}
-                  name={ingridItem.name}
-                  id={ingridItem._id}
-                  onClick={() => {
-                    setSelectedItem(index);
-                    handleOpenModal();
-                  }}
-                />
-              ) : null;
-            })}
+            {burgerData &&
+              burgerData.map &&
+              burgerData.map((ingridItem, index) => {
+                return ingridItem.type === "bun" ? (
+                  <ItemOfBurger
+                    key={ingridItem._id}
+                    count={2}
+                    price={ingridItem.price}
+                    img={ingridItem.image}
+                    name={ingridItem.name}
+                    id={ingridItem._id}
+                    onClick={() => {
+                      setSelectedItem(index);
+                      handleOpenModal();
+                    }}
+                  />
+                ) : null;
+              })}
           </div>
         </div>
         <div id="sauceDiv">
           <h2 className="text text_type_main-medium pt-2">Соусы</h2>
           <div className={styles.ingrid}>
-            {burgerData.map((ingridItem, index) => {
-              return ingridItem.type === "sauce" ? (
-                <ItemOfBurger
-                  key={ingridItem._id}
-                  count={2}
-                  price={ingridItem.price}
-                  img={ingridItem.image}
-                  name={ingridItem.name}
-                  id={ingridItem._id}
-                  onClick={() => {
-                    setSelectedItem(index);
-                    handleOpenModal();
-                  }}
-                />
-              ) : null;
-            })}
+            {burgerData &&
+              burgerData.map &&
+              burgerData.map((ingridItem, index) => {
+                return ingridItem.type === "sauce" ? (
+                  <ItemOfBurger
+                    key={ingridItem._id}
+                    count={2}
+                    price={ingridItem.price}
+                    img={ingridItem.image}
+                    name={ingridItem.name}
+                    id={ingridItem._id}
+                    onClick={() => {
+                      setSelectedItem(index);
+                      handleOpenModal();
+                    }}
+                  />
+                ) : null;
+              })}
           </div>
         </div>
         <div id="mainDiv">
           <h2 className="text text_type_main-medium pt-2">Начинки</h2>
           <div className={styles.ingrid}>
-            {burgerData.map((ingridItem, index) => {
-              return ingridItem.type === "main" ? (
-                <ItemOfBurger
-                  key={ingridItem._id}
-                  count={2}
-                  price={ingridItem.price}
-                  img={ingridItem.image}
-                  name={ingridItem.name}
-                  id={ingridItem.id}
-                  onClick={() => {
-                    setSelectedItem(index);
-                    handleOpenModal();
-                  }}
-                />
-              ) : null;
-            })}
+            {burgerData &&
+              burgerData.map &&
+              burgerData.map((ingridItem, index) => {
+                return ingridItem.type === "main" ? (
+                  <ItemOfBurger
+                    key={ingridItem._id}
+                    count={2}
+                    price={ingridItem.price}
+                    img={ingridItem.image}
+                    name={ingridItem.name}
+                    id={ingridItem.id}
+                    onClick={() => {
+                      setSelectedItem(index);
+                      handleOpenModal();
+                    }}
+                  />
+                ) : null;
+              })}
           </div>
         </div>
         {modalVisible && (
@@ -136,14 +142,7 @@ function BurgerIngredients() {
             onClose={() => setModalVisible(false)}
             title="Детали ингредиента"
           >
-            <IngredientDetails
-              name={burgerData[selectedItem].name}
-              imageLarge={burgerData[selectedItem].image_large}
-              calories={burgerData[selectedItem].calories}
-              proteins={burgerData[selectedItem].proteins}
-              fat={burgerData[selectedItem].fat}
-              carbohydrates={burgerData[selectedItem].carbohydrates}
-            />
+            <IngredientDetails ingridDetail={burgerData[selectedItem]} />
           </Modal>
         )}
       </div>

@@ -12,65 +12,62 @@ import { IngridContext } from "../services/ingrid-context";
 import { TotalPriceContext } from "../services/total-price";
 
 // Данные по списку состава бургера в виде массива
-const idBuns = "60d3b41abdacab0026a733c7";
-const idItemsOfBurger = [
-  "60d3b41abdacab0026a733c8",
-  "60d3b41abdacab0026a733c9",
-  "60d3b41abdacab0026a733ca",
-  "60d3b41abdacab0026a733cc",
-  "60d3b41abdacab0026a733cd",
-];
+let idBuns = null;
+let idItemsOfBurger = [];
 
 const orderUrl = "https://norma.nomoreparties.space/api/orders";
 
-function BurgerComponentItem(props) {
-  let ingridName = props.name;
-  if (props.type === "top") {
-    ingridName += " (верх)";
-  } else if (props.type === "bottom") {
+function BurgerComponentItem({
+  name,
+  type,
+  isLocked,
+  price,
+  thumbnail,
+  dragIcon,
+}) {
+  let ingridName = name;
+  if (type === "top") {
+    name += " (верх)";
+  } else if (type === "bottom") {
     ingridName += " (низ)";
   }
 
   return (
     <div className={`${styles.burger_inrid_list_item} pr-4 pl-4`}>
-      {props.dragIcon && <DragIcon type="primary" />}
+      {dragIcon && <DragIcon type="primary" />}
       <ConstructorElement
-        type={props.type}
-        isLocked={props.isLocked}
+        type={type}
+        isLocked={isLocked}
         text={ingridName}
-        price={props.price}
-        thumbnail={props.thumbnail}
+        price={price}
+        thumbnail={thumbnail}
       />
     </div>
   );
 }
 
-function BurgerComponentsList(props) {
+function BurgerComponentsList({ dataBurgers }) {
+  const bunFind = dataBurgers.find((item) => item._id === idBuns);
   return (
     <div className={styles.burger_inrid_list}>
       <BurgerComponentItem
         type="top"
-        name={props.dataBurgers.find((item) => item._id === idBuns).name}
-        price={props.dataBurgers.find((item) => item._id === idBuns).price}
-        thumbnail={props.dataBurgers.find((item) => item._id === idBuns).image}
+        name={bunFind.name}
+        price={bunFind.price}
+        thumbnail={bunFind.image}
         isLocked
       />
       <div className={styles.burger_inrid_inner_list}>
         {idItemsOfBurger.map((ingridItem) => {
+          const ingridFind = dataBurgers.find(
+            (item) => item._id === ingridItem
+          );
           return (
             <BurgerComponentItem
-              name={
-                props.dataBurgers.find((item) => item._id === ingridItem).name
-              }
-              price={
-                props.dataBurgers.find((item) => item._id === ingridItem).price
-              }
-              thumbnail={
-                props.dataBurgers.find((item) => item._id === ingridItem).image
-              }
-              key={
-                props.dataBurgers.find((item) => item._id === ingridItem)._id
-              }
+              name={ingridFind.name}
+              price={ingridFind.price}
+              thumbnail={ingridFind.image}
+              key={ingridFind._id}
               dragIcon
             />
           );
@@ -78,9 +75,9 @@ function BurgerComponentsList(props) {
       </div>
       <BurgerComponentItem
         type="bottom"
-        name={props.dataBurgers.find((item) => item._id === idBuns).name}
-        price={props.dataBurgers.find((item) => item._id === idBuns).price}
-        thumbnail={props.dataBurgers.find((item) => item._id === idBuns).image}
+        name={bunFind.name}
+        price={bunFind.price}
+        thumbnail={bunFind.image}
         isLocked
       />
     </div>
@@ -178,6 +175,14 @@ function PlaceOrder(props) {
 
 function BurgerConstructor() {
   const burgerData = useContext(IngridContext);
+  idBuns = burgerData[0]._id;
+  idItemsOfBurger = [
+    burgerData[3]._id,
+    burgerData[4]._id,
+    burgerData[5]._id,
+    burgerData[6]._id,
+    burgerData[7]._id,
+  ];
 
   return (
     <section className={`${styles.wrapper} pt-25`}>

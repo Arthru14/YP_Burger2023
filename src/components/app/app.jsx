@@ -1,4 +1,4 @@
-import React, {useState} from "react";
+import React, { useMemo, useState } from "react";
 import styles from "./app.module.css";
 import AppHeader from "../app-header/app-header";
 import BurgerIngredients from "../burger-ingredients/burger-ingredients";
@@ -14,13 +14,12 @@ function App() {
   const [totalPrice, setTotalPrice] = useState(0);
 
   React.useEffect(() => {
-    const getBurgerData = () => {
-      return fetch(urlBurgerData).then((res) => {
-        if (res.ok) {
-          return res.json();
-        }
-        throw new Error("error get data");
-      });
+    const getBurgerData = async () => {
+      const res = await fetch(urlBurgerData);
+      if (res.ok) {
+        return res.json();
+      }
+      throw new Error("error get data");
     };
     getBurgerData()
       .then((res) => {
@@ -30,16 +29,24 @@ function App() {
       .catch((err) => console.log(err));
   }, []);
 
+  const totalPriceContextValue = useMemo(() => {
+    return { totalPrice, setTotalPrice };
+  }, [totalPrice, setTotalPrice]);
+
+  const ingridContextValue = useMemo(() => {
+    return burgerData;
+  }, [burgerData]);
+
   return (
     <>
       <AppHeader />
       <main className={styles.wrapper}>
         <div className={styles.content}>
           {burgerDataLoading && (
-            <TotalPriceContext.Provider value={{totalPrice, setTotalPrice}}>
-              <IngridContext.Provider value={burgerData}>
+            <TotalPriceContext.Provider value={totalPriceContextValue}>
+              <IngridContext.Provider value={ingridContextValue}>
                 <BurgerIngredients />
-                <BurgerConstructor value={burgerData} />
+                <BurgerConstructor />
               </IngridContext.Provider>
             </TotalPriceContext.Provider>
           )}
