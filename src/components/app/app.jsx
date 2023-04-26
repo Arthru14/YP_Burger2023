@@ -1,39 +1,32 @@
-import React from "react";
+import { useEffect } from "react";
+import { useDispatch, useSelector } from "react-redux";
 import styles from "./app.module.css";
 import AppHeader from "../app-header/app-header";
 import BurgerIngredients from "../burger-ingredients/burger-ingredients";
 import BurgerConstructor from "../burger-constructor/burger-constructor";
-
-const urlBurgerData = "https://norma.nomoreparties.space/api/ingredients";
+import { getBurgerData } from "../../services/actions/app";
 
 function App() {
-  const [burgerData, setBurgerData] = React.useState();
-  const [burgerDataLoading, setBurgerDataLoading] = React.useState(false);
+  const dispatch = useDispatch();
+  const { isBurgerDataLoaded } = useSelector(
+    (store) => store.ingredientReducer
+  );
 
-  React.useEffect(() => {
-    const getBurgerData = () => {
-      return fetch(urlBurgerData).then((res) => {
-        if (res.ok) {
-          return res.json();
-        }
-        throw new Error("error get data");
-      });
-    };
-    getBurgerData()
-      .then((res) => {
-        setBurgerData(res.data);
-        setBurgerDataLoading(true);
-      })
-      .catch((err) => console.log(err));
-  }, []);
+  useEffect(() => {
+    dispatch(getBurgerData());
+  }, [dispatch]);
 
   return (
     <>
       <AppHeader />
       <main className={styles.wrapper}>
         <div className={styles.content}>
-          {burgerDataLoading && <BurgerIngredients dataBurgers={burgerData} />}
-          {burgerDataLoading && <BurgerConstructor dataBurgers={burgerData} />}
+          {isBurgerDataLoaded && (
+            <>
+              <BurgerIngredients />
+              <BurgerConstructor />
+            </>
+          )}
         </div>
       </main>
     </>

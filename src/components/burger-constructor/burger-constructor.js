@@ -1,5 +1,5 @@
-import React from "react";
-import PropTypes from "prop-types";
+import { useState, useEffect, useMemo, useRef } from "react";
+import { useDispatch, useSelector } from "react-redux";
 import styles from "./burger-constructor.module.css";
 import { ConstructorElement } from "@ya.praktikum/react-developer-burger-ui-components";
 import { Button } from "@ya.praktikum/react-developer-burger-ui-components";
@@ -7,18 +7,54 @@ import { CurrencyIcon } from "@ya.praktikum/react-developer-burger-ui-components
 import { DragIcon } from "@ya.praktikum/react-developer-burger-ui-components";
 import Modal from "../modal/modal";
 import OrderDetails from "../order-details/order-details";
-import ServerDataTypes from "../../utils/data-format";
+import NoItem from "../../images/no-item.png";
+import { useDrag, useDrop } from "react-dnd";
+import requestToServer, { BASE_URL, ORDER_ENDPOINT } from "../../utils/api";
+import { useModal } from "../../hooks/useModal";
+import {
+  addBunToConstructor,
+  addIngridToConstructor,
+  makeOrder,
+  makeOrderFailed,
+  makeOrderSuccess,
+  moveComponentOfBurger,
+  removeComponentFromBurger,
+} from "../../services/actions/action-creator";
+import { getOrderFromServer } from "../../services/actions/get-order";
 
 function BurgerComponentItem(props) {
+  const dispatch = useDispatch();
   let ingridName = props.name;
   if (props.type === "top") {
     ingridName += " (верх)";
   } else if (props.type === "bottom") {
     ingridName += " (низ)";
   }
+  const { id } = props;
+  const ref = useRef(null);
+
+  const [, dragRef] = useDrag({
+    type: "structureOfBurger",
+    item: { id },
+  });
+
+  const [, dropRef] = useDrop({
+    accept: "structureOfBurger",
+    drop(item) {
+      dispatch(moveComponentOfBurger(item.id, id));
+    },
+  });
+
+  dragRef(dropRef(ref));
+  const onRemoveItemHandle = () => {
+    dispatch(removeComponentFromBurger(props.id, props.price));
+  };
 
   return (
-    <div className={`${styles.burger_inrid_list_item} pr-4 pl-4`}>
+    <div
+      className={`${styles.burger_inrid_list_item} pr-4 pl-4`}
+      ref={props.dragIcon ? ref : null}
+    >
       {props.dragIcon && <DragIcon type="primary" />}
       <ConstructorElement
         type={props.type}
@@ -26,58 +62,138 @@ function BurgerComponentItem(props) {
         text={ingridName}
         price={props.price}
         thumbnail={props.thumbnail}
+        handleClose={onRemoveItemHandle}
       />
     </div>
   );
 }
 
-function BurgerComponentsList(props) {
+function BurgerComponentsList() {
+  const dispatch = useDispatch();
+  const burgerData = useSelector(
+    (store) => store.ingredientReducer.itemsOfIngrids
+  );
+  const { isBunAdded } = useSelector((store) => store.constructorsReducer);
+  const { addedIngreds } = useSelector((store) => store.constructorsReducer);
+
+  const onDropHandler = (item) => {
+    if (item.isBun) {
+      dispatch(
+        addBunToConstructor(
+          item.id,
+          item.price,
+          isBunAdded
+            ? burgerData.find((item) => item._id === addedIngreds[0].ingridId)
+                .price
+            : 0
+        )
+      );
+    } else {
+      dispatch(addIngridToConstructor(item.id, item.price));
+    }
+  };
+
+  const [, dropTarget] = useDrop({
+    accept: "burger",
+    drop(itemId) {
+      onDropHandler(itemId);
+    },
+  });
+
   return (
-    <div className={styles.burger_inrid_list}>
+    <div className={styles.burger_inrid_list} ref={dropTarget}>
       <BurgerComponentItem
         type="top"
-        name={props.dataBurgers[0].name}
-        price={props.dataBurgers[0].price}
-        thumbnail={props.dataBurgers[0].image}
-        isLocked
+        name={
+          isBunAdded
+            ? burgerData.find((item) => item._id === addedIngreds[0].ingridId)
+                .name
+            : "Выберите булку"
+        }
+        price={
+          isBunAdded
+            ? burgerData.find((item) => item._id === addedIngreds[0].ingridId)
+                .price
+            : ""
+        }
+        thumbnail={
+          isBunAdded
+            ? burgerData.find((item) => item._id === addedIngreds[0].ingridId)
+                .image
+            : NoItem
+        }
+        isLocked={isBunAdded}
       />
       <div className={styles.burger_inrid_inner_list}>
-        {props.dataBurgers.map((ingridItem) => {
-          return ingridItem.type !== "bun" ? (
-            <BurgerComponentItem
-              name={ingridItem.name}
-              price={ingridItem.price}
-              thumbnail={ingridItem.image}
-              key={ingridItem._id}
-              dragIcon
-            />
-          ) : null;
+        {addedIngreds.map((ingridItem, index) => {
+          if (isBunAdded && (index === 0 || index === addedIngreds.length - 1))
+            return "";
+          return (
+            ingridItem.uniqueId && (
+              <BurgerComponentItem
+                name={
+                  burgerData.find((item) => item._id === ingridItem.ingridId)
+                    .name
+                }
+                price={
+                  burgerData.find((item) => item._id === ingridItem.ingridId)
+                    .price
+                }
+                thumbnail={
+                  burgerData.find((item) => item._id === ingridItem.ingridId)
+                    .image
+                }
+                key={ingridItem.uniqueId}
+                id={index}
+                dragIcon
+              />
+            )
+          );
         })}
       </div>
       <BurgerComponentItem
         type="bottom"
-        name={props.dataBurgers[0].name}
-        price={props.dataBurgers[0].price}
-        thumbnail={props.dataBurgers[0].image}
-        isLocked
+        name={
+          isBunAdded
+            ? burgerData.find(
+                (item) =>
+                  item._id === addedIngreds[addedIngreds.length - 1].ingridId
+              ).name
+            : "Выберите булку"
+        }
+        price={
+          isBunAdded
+            ? burgerData.find(
+                (item) =>
+                  item._id === addedIngreds[addedIngreds.length - 1].ingridId
+              ).price
+            : ""
+        }
+        thumbnail={
+          isBunAdded
+            ? burgerData.find(
+                (item) =>
+                  item._id === addedIngreds[addedIngreds.length - 1].ingridId
+              ).image
+            : NoItem
+        }
+        isLocked={isBunAdded}
       />
-      {/* <div className={`${styles.burger_inrid_list_item} pr-4 pl-4`}>
-        <DragIcon type="primary" />
-        <ConstructorElement
-          text="Краторная булка N-200i (верх)"
-          price={50}
-          thumbnail={img}
-        />
-      </div> */}
     </div>
   );
 }
 
 function PlaceOrder(props) {
-  const [modalVisible, setModalVisible] = React.useState(false);
+  const { isModalOpen, openModal, closeModal } = useModal();
+
+  const dispatch = useDispatch();
+  const { addedIngreds, orderNum, currentOrderIsLoading } = useSelector(
+    (store) => store.constructorsReducer
+  );
 
   const handleOpenModal = () => {
-    setModalVisible(true);
+    dispatch(getOrderFromServer(addedIngreds));
+    !currentOrderIsLoading && openModal();
   };
 
   return (
@@ -98,9 +214,13 @@ function PlaceOrder(props) {
           >
             Оформить заказ
           </Button>
-          {modalVisible && (
-            <Modal onClose={() => setModalVisible(false)}>
-              <OrderDetails orderNum="034536" />
+          {isModalOpen && (
+            <Modal onClose={closeModal}>
+              {!currentOrderIsLoading ? (
+                <OrderDetails orderNum={orderNum} />
+              ) : (
+                <p className="text text_type_main-medium">Загрузка данных...</p>
+              )}
             </Modal>
           )}
         </>
@@ -113,16 +233,18 @@ function PlaceOrder(props) {
   );
 }
 
-function BurgerConstructor(props) {
+function BurgerConstructor() {
+  const { totalPrice } = useSelector((store) => store.constructorsReducer);
+
   return (
     <section className={`${styles.wrapper} pt-25`}>
-      <BurgerComponentsList dataBurgers={props.dataBurgers} />
-      <PlaceOrder price="4255" />
+      <BurgerComponentsList />
+      <PlaceOrder price={totalPrice} />
     </section>
   );
 }
 
-BurgerConstructor.propTypes = {
-  dataBurgers: PropTypes.arrayOf(ServerDataTypes.isRequired).isRequired,
-};
+// BurgerConstructor.propTypes = {
+//   burgerData: PropTypes.arrayOf(ServerDataTypes.isRequired),
+// };
 export default BurgerConstructor;
