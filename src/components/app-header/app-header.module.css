@@ -14,7 +14,34 @@
   width: 1240px;
 }
 
-.navMenu {
+.nav {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding-top: 16px;
+  padding-bottom: 16px;
+  width: 100%;
+}
+
+.nav > div {
+  width: 33%;
+}
+
+.nav > div > a {
+  text-decoration: none;
+}
+
+.NavButton {
+  display: flex;
+  justify-content: end;
+  text-decoration: none;
+  background-color: #1c1c21;
+  border: none;
+  cursor: pointer;
+  color: white;
+}
+
+.navMenuLeft {
   display: flex;
   justify-content: start;
   width: 33%;
@@ -23,42 +50,12 @@
 .navLogo {
   display: flex;
   justify-content: center;
+  text-align: center;
   width: 33%;
 }
 
-.navLogin {
+.navMenuRight {
   display: flex;
   justify-content: end;
   width: 33%;
-}
-
-.navLogin a {
-  text-decoration: none;
-  display: flex;
-  align-items: center;
-}
-
-.nav {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-}
-
-.ulhr {
-  display: flex;
-  align-items: center;
-  margin: 0;
-  padding: 4px;
-  list-style-type: none;
-}
-
-.ulhr li {
-  margin-right: 4px;
-  padding: 4px;
-}
-
-.ulhr > li > a {
-  text-decoration: none;
-  display: flex;
-  align-items: center;
 }

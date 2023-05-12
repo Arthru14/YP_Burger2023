@@ -1,19 +1,30 @@
-import React from "react";
+import React, { useEffect } from "react";
 import PropTypes from "prop-types";
 import styles from "./ingredient-details.module.css";
+import { useSelector } from "react-redux";
 
-export default function IngredientDetails(props) {
+export default function IngredientDetails() {
+  const selectedItem = useSelector(
+    (store) => store.ingredientReducer.selectedItem
+  );
+  console.log(selectedItem);
+  useEffect(() => {
+    window.history.replaceState(null, null, "/ingredients/" + selectedItem._id);
+  }, [selectedItem._id]);
+
+  console.log(selectedItem._id);
+
   return (
     <div className={styles.content}>
-      <img src={props.imageLarge} alt={props.name} />
-      <h2 className="text text_type_main-medium pt-4">{props.name}</h2>
+      <img src={selectedItem.image_large} alt={selectedItem.name} />
+      <h2 className="text text_type_main-medium pt-4">{selectedItem.name}</h2>
       <div className={styles.ingrid_info}>
         <div>
           <span className="text text_type_main-small text_color_inactive">
             Калории, ккал
           </span>
           <span className="text text_type_digits-default text_color_inactive">
-            {props.calories}
+            {selectedItem.calories}
           </span>
         </div>
         <div>
@@ -21,7 +32,7 @@ export default function IngredientDetails(props) {
             Белки, г
           </span>
           <span className="text text_type_digits-default text_color_inactive">
-            {props.proteins}
+            {selectedItem.proteins}
           </span>
         </div>
         <div>
@@ -29,7 +40,7 @@ export default function IngredientDetails(props) {
             Жиры, г
           </span>
           <span className="text text_type_digits-default text_color_inactive">
-            {props.fat}
+            {selectedItem.fat}
           </span>
         </div>
         <div>
@@ -37,19 +48,10 @@ export default function IngredientDetails(props) {
             Углеводы, г
           </span>
           <span className="text text_type_digits-default text_color_inactive">
-            {props.carbohydrates}
+            {selectedItem.carbohydrates}
           </span>
         </div>
       </div>
     </div>
   );
 }
-
-IngredientDetails.propTypes = {
-  imageLarge: PropTypes.string.isRequired,
-  name: PropTypes.string.isRequired,
-  calories: PropTypes.number.isRequired,
-  proteins: PropTypes.number.isRequired,
-  fat: PropTypes.number.isRequired,
-  carbohydrates: PropTypes.number.isRequired,
-};

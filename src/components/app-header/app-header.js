@@ -1,48 +1,87 @@
-import React from "react";
+import { Link, useLocation } from "react-router-dom";
 import styles from "./app-header.module.css";
-import { Logo } from "@ya.praktikum/react-developer-burger-ui-components";
-import { BurgerIcon } from "@ya.praktikum/react-developer-burger-ui-components";
-import { ListIcon } from "@ya.praktikum/react-developer-burger-ui-components";
-import { ProfileIcon } from "@ya.praktikum/react-developer-burger-ui-components";
+import {
+  Logo,
+  BurgerIcon,
+  ListIcon,
+  ProfileIcon,
+  Button,
+} from "@ya.praktikum/react-developer-burger-ui-components";
+import { useSelector } from "react-redux";
+import { useAuth } from "../../services/auth";
+
+const NavLink = ({ title, icon, link, currentPage }) => {
+  const Icon = icon;
+  return (
+    <Link to={link}>
+      <Button
+        htmlType="button"
+        type="secondary"
+        size="medium"
+        className={styles.NavButton}
+      >
+        <Icon type={currentPage ? "primary" : "secondary"} className="pr-2" />
+        <div
+          className={`pl-2 text text_type_main-default ${
+            !currentPage ? "text_color_inactive" : null
+          }`}
+        >
+          {title}
+        </div>
+      </Button>
+    </Link>
+  );
+};
 
 function AppHeader() {
+  const location = useLocation();
+  const isConstructorPage = location.pathname === "/";
+  const isOrderListPage = location.pathname === "/orderList";
+  const isProfilePage =
+    location.pathname === "/profile" ||
+    location.pathname === "/profile/orderhistory" ||
+    location.pathname === "/login" ||
+    location.pathname === "/register" ||
+    location.pathname === "/forgot-password" ||
+    location.pathname === "/reset-password";
+
+  const userName = useSelector((store) => store.userReducer.currentUser.name);
+  // const userAuth = useAuth();
+  // const userName = userAuth.user.name;
+  // const savedEmail = userAuth.user.email;
+
   return (
     <header className={styles.header}>
       <div className={styles.wrapper}>
-        <div className={styles.navMenu}>
-          <nav className={styles.nav}>
-            <ul className={styles.ulhr}>
-              <li className="text text_type_main-default">
-                <a href="#">
-                  <BurgerIcon type="secondary" className="pr-2" />
-                  <span className="pl-2 text_color_inactive">Конструктор</span>
-                </a>
-              </li>
-              <li>
-                <a href="#" className="text text_type_main-default">
-                  <ListIcon type="secondary" />
-                  <span className="pl-2 text_color_inactive">
-                    Лента заказов
-                  </span>
-                </a>
-              </li>
-            </ul>
-          </nav>
-        </div>
-        <div className={styles.navLogo}>
-          <a href="#">
-            <Logo />
-          </a>
-        </div>
-        <div className={styles.navLogin}>
-          <a
-            href="#"
-            className="text text_type_main-default text_color_inactive"
-          >
-            <ProfileIcon type="secondary" />
-            <span className="pl-2">Личный кабинет</span>
-          </a>
-        </div>
+        <nav className={styles.nav}>
+          <div className={styles.navMenuLeft}>
+            <NavLink
+              title="Конструктор"
+              icon={BurgerIcon}
+              link="/"
+              currentPage={isConstructorPage}
+            />
+            <NavLink
+              title="Лента заказов"
+              icon={ListIcon}
+              link="/orderList"
+              currentPage={isOrderListPage}
+            />
+          </div>
+          <div className={styles.navLogo}>
+            <Link to="/">
+              <Logo />
+            </Link>
+          </div>
+          <div className={styles.navMenuRight}>
+            <NavLink
+              title={userName ? userName : "Личный кабинет"}
+              icon={ProfileIcon}
+              link="/profile"
+              currentPage={isProfilePage}
+            />
+          </div>
+        </nav>
       </div>
     </header>
   );

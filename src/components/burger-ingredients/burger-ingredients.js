@@ -15,6 +15,7 @@ import {
 } from "../../services/actions/burger-ingredients";
 import { useDrag } from "react-dnd";
 import { useModal } from "../../hooks/useModal";
+import { useNavigate } from "react-router-dom";
 
 function Tabs(props) {
   return (
@@ -80,6 +81,8 @@ function BurgerIngredients() {
   });
 
   const dispatch = useDispatch();
+  const navigate = useNavigate();
+
   const burgerData = useSelector(
     (store) => store.ingredientReducer.itemsOfIngrids
   );
@@ -187,31 +190,20 @@ function BurgerIngredients() {
             })}
           </div>
         </div>
-        {isModalOpen && (
-          <Modal
-            onClose={() => {
-              closeModal();
-              dispatch({ type: CLEAR_SELECTED_INGREDIENT });
-            }}
-            title="Детали ингредиента"
-          >
-            <IngredientDetails
-              name={selectedItem.name}
-              imageLarge={selectedItem.image_large}
-              calories={selectedItem.calories}
-              proteins={selectedItem.proteins}
-              fat={selectedItem.fat}
-              carbohydrates={selectedItem.carbohydrates}
-            />
-          </Modal>
-        )}
+        <Modal
+          onClose={() => {
+            closeModal();
+            window.history.replaceState(null, null, "/");
+            dispatch({ type: CLEAR_SELECTED_INGREDIENT });
+          }}
+          title="Детали ингредиента"
+          visible={!!selectedItem._id}
+        >
+          <IngredientDetails />
+        </Modal>
       </div>
     </div>
   );
 }
 
 export default BurgerIngredients;
-
-// BurgerIngredients.propTypes = {
-//   burgerData: PropTypes.arrayOf(ServerDataTypes.isRequired),
-// };

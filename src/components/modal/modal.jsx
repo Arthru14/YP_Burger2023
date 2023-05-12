@@ -15,23 +15,26 @@ export default function Modal(props) {
     };
   }, [props]);
 
-  return ReactDOM.createPortal(
-    <>
-      <ModalOverlay onClick={props.onClose} />
-      <div
-        className={`${styles.modal_window} p-10`}
-        onClick={(e) => e.stopPropagation()}
-      >
-        <div className={styles.title}>
-          <span className="text text_type_main-medium">{props.title}</span>
-          <span onClick={props.onClose}>
-            <CloseIcon type="secondary" />
-          </span>
+  return (
+    props.visible &&
+    ReactDOM.createPortal(
+      <>
+        <ModalOverlay onClick={props.onClose} />
+        <div
+          className={`${styles.modal_window} p-10`}
+          onClick={(e) => e.stopPropagation()}
+        >
+          <div className={styles.title}>
+            <span className="text text_type_main-medium">{props.title}</span>
+            <span onClick={props.onClose}>
+              <CloseIcon type="secondary" />
+            </span>
+          </div>
+          {props.children}
         </div>
-        {props.children}
-      </div>
-    </>,
-    document.getElementById("react-modals")
+      </>,
+      document.getElementById("react-modals")
+    )
   );
 }
 

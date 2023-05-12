@@ -1,4 +1,5 @@
 import React from "react";
+import { BrowserRouter as Router } from "react-router-dom";
 import ReactDOM from "react-dom/client";
 import "./index.css";
 import reportWebVitals from "./reportWebVitals";
@@ -24,11 +25,13 @@ const store = createStore(rootReducer, enhancer);
 
 const root = ReactDOM.createRoot(document.getElementById("root"));
 root.render(
-  <Provider store={store}>
-    <DndProvider backend={HTML5Backend}>
-      <App />
-    </DndProvider>
-  </Provider>
+  <Router>
+    <Provider store={store}>
+      <DndProvider backend={HTML5Backend}>
+        <App />
+      </DndProvider>
+    </Provider>
+  </Router>
 );
 
 reportWebVitals();
