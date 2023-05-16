@@ -5,15 +5,18 @@ import {
   PasswordInput,
   Button,
 } from "@ya.praktikum/react-developer-burger-ui-components";
-import { Link, useNavigate } from "react-router-dom";
+import { Link, useLocation, useNavigate } from "react-router-dom";
 import { useAuth } from "../services/auth";
+import { useForm } from "../hooks/useForm";
 
 export function LoginPage() {
   const { signIn } = useAuth();
   const navigate = useNavigate();
+  const location = useLocation();
+  const from = location.state?.from?.pathname || "/";
 
   const [valueEmail, setValueEmail] = useState("shmakov.arthur@yandex.ru");
-  const [valuePassword, setValuePassword] = useState("333333");
+  const [valuePassword, setValuePassword] = useState("222222");
 
   const onChangeEmail = (e) => {
     setValueEmail(e.target.value);
@@ -26,7 +29,7 @@ export function LoginPage() {
   const onEnter = (e) => {
     e.preventDefault();
     signIn(valueEmail, valuePassword).then(function () {
-      navigate("/");
+      navigate(from, { replace: true });
     });
   };
 
@@ -34,27 +37,22 @@ export function LoginPage() {
     <main className={styles.wrapper}>
       <div className={styles.content}>
         <span className="pb-3 text text_type_main-medium">Вход</span>
-        <EmailInput
-          onChange={onChangeEmail}
-          value={valueEmail}
-          name={"email"}
-          isIcon={false}
-          extraClass="pt-3 pb-3"
-        />
-        <PasswordInput
-          onChange={onChangePassword}
-          value={valuePassword}
-          name={"password"}
-          extraClass="mb-2 pt-3 pb-3"
-        />
-        <Button
-          htmlType="button"
-          type="primary"
-          size="medium"
-          onClick={onEnter}
-        >
-          Войти
-        </Button>
+        <form onSubmit={onEnter}>
+          <EmailInput
+            onChange={onChangeEmail}
+            value={valueEmail}
+            name={"email"}
+            isIcon={false}
+            extraClass="pt-3 pb-3"
+          />
+          <PasswordInput
+            onChange={onChangePassword}
+            value={valuePassword}
+            name={"password"}
+            extraClass="mb-2 pt-3 pb-3"
+          />
+          <Button htmlType="submit">Войти</Button>
+        </form>
         <span className="pt-20 text text_type_main-small text_color_inactive">
           Вы новый пользователь?{" "}
           <Link to="/register" className={styles.links}>

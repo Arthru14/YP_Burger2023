@@ -20,6 +20,11 @@
   flex-wrap: wrap;
 }
 
+.ingrid > a {
+  text-decoration: none;
+  color: white;
+}
+
 .ingridItem {
   display: flex;
   flex-direction: column;

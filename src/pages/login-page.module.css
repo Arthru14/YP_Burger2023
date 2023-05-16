@@ -14,9 +14,13 @@
   align-items: center;
   overflow: hidden;
 }
+.content > form {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
 
 .links {
-    text-decoration: none;
-    color: #4C4CFF;
-    ;
+  text-decoration: none;
+  color: #4c4cff;
 }

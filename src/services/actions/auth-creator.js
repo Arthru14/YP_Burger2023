@@ -1,28 +1,24 @@
 import {
+  GET_USER_REQUEST,
+  GET_USER_SUCCESS,
   LOGIN,
   LOGOUT,
   REGISTER,
+  REGISTER_PROCESS,
   RESET_PASSWORD,
   SAVE_PASSWORD,
   UPDATE_PROFILE,
-  LOAD_PROFILE_FAILED,
 } from "./auth";
 import {
-  //   changeUserRequest,
-  //   getUserRequest,
-  //   loginRequest,
-  //   logoutRequest,
-  //   registerRequest,
-  //   resetPasswordRequest,
-  //   sendRecoveryCodeRequest,
   sendUserRegisterDataToServer,
   sendEmailCodeRequest,
   setNewPasswordRequest,
   loginRequest,
   logoutRequest,
   changeUserProfileRequest,
+  getUserRequest,
 } from "../../utils/api";
-import { deleteCookie, setCookie } from "../cookies";
+import { deleteCookie, getCookie, setCookie } from "../cookies";
 
 const handleErrors = async (func) => {
   try {
@@ -33,8 +29,15 @@ const handleErrors = async (func) => {
 };
 
 const registerNewUserInternal = async (name, password, email, dispatch) => {
-  const data = await sendUserRegisterDataToServer(name, password, email);
-  dispatch({ type: REGISTER, data });
+  try {
+    dispatch({ type: REGISTER_PROCESS });
+    const data = await sendUserRegisterDataToServer(name, password, email);
+    if (data.success) {
+      dispatch({ type: REGISTER, data });
+    }
+  } catch (error) {
+    console.log(error);
+  }
 };
 
 export const registerNewUser = (name, password, email) => async (dispatch) => {
@@ -42,8 +45,14 @@ export const registerNewUser = (name, password, email) => async (dispatch) => {
 };
 
 const sendEmailCodeCreator = async (email, dispatch) => {
-  const result = await sendEmailCodeRequest(email);
-  if (result) dispatch({ type: RESET_PASSWORD });
+  try {
+    const data = await sendEmailCodeRequest(email);
+    if (data.success) {
+      dispatch({ type: RESET_PASSWORD });
+    }
+  } catch (error) {
+    console.log(error);
+  }
 };
 
 export const sendEmailCode = (email) => async (dispatch) => {
@@ -51,8 +60,14 @@ export const sendEmailCode = (email) => async (dispatch) => {
 };
 
 const saveNewPasswordCreator = async (password, emailCode, dispatch) => {
-  const result = await setNewPasswordRequest(password, emailCode);
-  if (result) dispatch({ type: SAVE_PASSWORD });
+  try {
+    const data = await setNewPasswordRequest(password, emailCode);
+    if (data.success) {
+      dispatch({ type: SAVE_PASSWORD });
+    }
+  } catch (error) {
+    console.log(error);
+  }
 };
 
 export const saveNewPassword = (password, emailCode) => async (dispatch) => {
@@ -60,22 +75,103 @@ export const saveNewPassword = (password, emailCode) => async (dispatch) => {
 };
 
 const loginInternal = async (email, password, dispatch) => {
-  const data = await loginRequest(email, password);
-  setCookie("accessToken", data.accessToken);
-  localStorage.setItem("refreshToken", data.refreshToken);
-  dispatch({ type: LOGIN, data });
+  try {
+    const data = await loginRequest(email, password);
+    if (data.success) {
+      setCookie("accessToken", data.accessToken);
+      localStorage.setItem("refreshToken", data.refreshToken);
+      console.log(data);
+      dispatch({ type: LOGIN, data });
+    }
+  } catch (error) {
+    console.log(error);
+  }
 };
 
 export const login = (email, password) => async (dispatch) => {
   handleErrors(() => loginInternal(email, password, dispatch));
 };
 
-const logoutInternal = async (dispatch) => {
-  await logoutRequest();
+export function loginAction(email, password) {
+  return function (dispatch) {
+    const data = loginRequest(email, password).then((res) => {
+      if (res && res.success) {
+        dispatch({ type: LOGIN, res });
+        setCookie("accessToken", res.accessToken);
+        localStorage.setItem("refreshToken", res.refreshToken);
+      }
+    });
+    // console.log(data);
+    // if (data.success) {
+    //   setCookie("accessToken", data.accessToken);
+    //   localStorage.setItem("refreshToken", data.refreshToken);
+    //   console.log(data);
+    //   dispatch({ type: LOGIN, data });
+    // }
+  };
+}
+export const logoutAction = () => {
+  return function (dispatch) {
+    logoutRequest()
+      .then((res) => {
+        if (res && res.success) {
+          deleteCookie("accessToken");
+          localStorage.removeItem("refreshToken");
+          dispatch({ type: LOGOUT });
+          return true;
+        }
+      })
+      .catch((err) => {
+        console.error("Error: ", err);
+      });
+  };
+};
 
-  deleteCookie("accessToken");
-  localStorage.removeItem("refreshToken");
-  dispatch({ type: LOGOUT });
+export const getUserAction = () => {
+  return async function (dispatch) {
+    dispatch({
+      type: GET_USER_REQUEST,
+    });
+    getUserRequest()
+      .then((res) => {
+        if (res && res.success) {
+          dispatch({
+            type: GET_USER_SUCCESS,
+            res,
+          });
+          return res;
+        }
+      })
+      .catch((err) => {
+        console.error("Error: ", err);
+      });
+
+    // try {
+    //   const res = await getUserRequest();
+    //   console.log(res);
+    //   if (res && res.success) {
+    //     // setCookie("accessToken", res.accessToken);
+    //     // localStorage.setItem("refreshToken", res.refreshToken);
+    //     dispatch({
+    //       type: GET_USER_SUCCESS,
+    //       res,
+    //     });
+    //   }
+    // } catch (err) {
+    //   console.error("Error: ", err);
+    // }
+  };
+};
+
+const logoutInternal = async (dispatch) => {
+  try {
+    const data = await logoutRequest();
+    deleteCookie("accessToken");
+    localStorage.removeItem("refreshToken");
+    dispatch({ type: LOGOUT });
+  } catch (error) {
+    console.log(error);
+  }
 };
 
 export const logout = () => async (dispatch) => {
@@ -83,8 +179,14 @@ export const logout = () => async (dispatch) => {
 };
 
 const updateUserProfileInternal = async (name, password, email, dispatch) => {
-  const data = await changeUserProfileRequest(name, password, email);
-  dispatch({ type: UPDATE_PROFILE, data });
+  try {
+    const data = await changeUserProfileRequest(name, password, email);
+    if (data.success) {
+      dispatch({ type: UPDATE_PROFILE, data });
+    }
+  } catch (error) {
+    console.log(error);
+  }
 };
 
 export const updateUserProfile =
@@ -94,29 +196,6 @@ export const updateUserProfile =
     );
   };
 
-// const resetPasswordInternal2 = async (password, token, dispatch) => {
-//   await resetPasswordRequest(password, token);
-//   dispatch({ type: SAVE_PASSWORD });
-// };
-
-// export const resetPassword = (email) => async (dispatch) => {
-//   handleErrors(() => resetPasswordInternal(email, dispatch));
-// };
-
-// export const savePassword = (password, token) => async (dispatch) => {
-//   handleErrors(() => resetPasswordInternal2(password, token, dispatch));
-// };
-
-// const getUser = async (dispatch) => {
-//   const data = await getUserRequest();
-//   dispatch({ type: UPDATE_PROFILE, ...data });
-// };
-
-// export const getProfile = () => async (dispatch) => {
-//   try {
-//     await getUser(dispatch);
-//   } catch (ex) {
-//     console.log("profile failed", ex.message);
-//     dispatch({ type: LOAD_PROFILE_FAILED });
-//   }
-// };
+export const registrationProcess = () => ({
+  type: REGISTER_PROCESS,
+});

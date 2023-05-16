@@ -7,10 +7,17 @@ export function LogoutPage() {
   const { user, signOut } = useAuth();
 
   useLayoutEffect(() => {
-    signOut().then(function () {
-      navigate("/login");
-    });
+    signOut().then(function () {});
   }, []);
 
   return <>{user ? <p>Выход...</p> : <Navigate to="/login" />}</>;
+
+  // useLayoutEffect(() => {
+  //   signOut().then(function () {
+  //     navigate("/login");
+  //   });
+  // }, []);
+  // console.log("logout");
+
+  // return <>{user ? <p>Выход...</p> : <Navigate to="/login" />}</>;
 }

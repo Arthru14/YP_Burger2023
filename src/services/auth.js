@@ -1,20 +1,15 @@
-import { useContext, useState, createContext } from "react";
-import { getUserRequest } from "../utils/api";
-// import { deleteCookie, setCookie } from "./cookies";
-import { login, logout } from "./actions/auth-creator";
-import { useDispatch } from "react-redux";
-
-// const fakeAuth = {
-//   isAuthenticated: false,
-//   signIn(cb) {
-//     fakeAuth.isAuthenticated = true;
-//     setTimeout(cb, 100); // fake async
-//   },
-//   signOut(cb) {
-//     fakeAuth.isAuthenticated = false;
-//     setTimeout(cb, 100);
-//   },
-// };
+import { useContext, useState, createContext, useEffect } from "react";
+import { getUserRequest, loginRequest, logoutRequest } from "../utils/api";
+import {
+  getUserAction,
+  login,
+  loginAction,
+  logout,
+  logoutAction,
+} from "./actions/auth-creator";
+import { useDispatch, useSelector } from "react-redux";
+import { deleteCookie, setCookie } from "./cookies";
+import { LOGIN_PROCESS } from "./actions/auth";
 
 const AuthContext = createContext(undefined);
 
@@ -30,41 +25,64 @@ export function useAuth() {
 export function useProvideAuth() {
   const dispatch = useDispatch();
   const [user, setUser] = useState(null);
+  const { name, email } = useSelector((store) => store.userReducer.currentUser);
 
-  const getUser = async () => {
-    try {
-      const data = await getUserRequest();
-      if (data) setUser({ name: data.user.name, email: data.user.email });
-    } catch (ex) {
-      console.log(ex.message);
-    }
+  const getUser = () => {
+    // dispatch(getUserAction());
+    setUser({ name: name, email: email });
   };
+
+  // const getUser = async () => {
+  //   try {
+  //     const data = await getUserRequest().then((res) => {
+  //       console.log(res);
+  //       setUser({ name: res.user.name, email: res.user.email });
+  //     });
+  //   } catch (ex) {
+  //     console.log(ex.message);
+  //   }
+  // };
 
   const signIn = async (email, password) => {
     try {
+      dispatch({ type: LOGIN_PROCESS });
+      dispatch(loginAction(email, password));
       // const data = await loginRequest(email, password);
-      // if (data) {
-      //   setCookie("accessToken", data.accessToken);
-      //   localStorage.setItem("refreshToken", data.refreshToken);
-      // }
-      dispatch(login(email, password));
+      // setCookie("accessToken", data.accessToken);
+      // localStorage.setItem("refreshToken", data.refreshToken);
     } catch (ex) {
       console.log(ex.message);
     }
-    // return true;
   };
+
+  // const signIn = async (email, password) => {
+  //   try {
+  //     dispatch(login(email, password));
+  //   } catch (ex) {
+  //     console.log(ex.message);
+  //   }
+  // };
 
   const signOut = async () => {
     try {
+      dispatch(logoutAction());
       // await logoutRequest();
       // deleteCookie("accessToken");
       // localStorage.removeItem("refreshToken");
-      dispatch(logout());
       setUser(null);
     } catch (ex) {
       console.log(ex.message);
     }
   };
+
+  // const signOut = async () => {
+  //   try {
+  //     dispatch(logout());
+  //     setUser(null);
+  //   } catch (ex) {
+  //     console.log(ex.message);
+  //   }
+  // };
 
   return {
     user,

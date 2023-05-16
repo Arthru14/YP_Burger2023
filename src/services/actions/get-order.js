@@ -18,7 +18,6 @@ export function getOrderFromServer(addedIngreds) {
       .then((result) => {
         if (result.success) {
           dispatch(makeOrderSuccess(result.order.number));
-          console.log(result.order.number);
         }
       })
       .catch((error) => {

@@ -52,32 +52,27 @@ export function ResetPasswordPage() {
         <span className="pb-3 text text_type_main-medium">
           Восстановление пароля
         </span>
-        <PasswordInput
-          placeholder={"Введите новый пароль"}
-          onChange={onChangePassword}
-          value={valuePassword}
-          name={"password"}
-          extraClass="pt-3 pb-3"
-        />
-        <Input
-          type={"text"}
-          placeholder={"Введите код из письма"}
-          onChange={(e) => setValueCodeEmail(e.target.value)}
-          value={valueCodeEmail}
-          name={"codeEmail"}
-          error={false}
-          errorText={"Ошибка"}
-          size={"default"}
-          extraClass="mb-2 pt-3 pb-3"
-        />
-        <Button
-          htmlType="button"
-          type="primary"
-          size="medium"
-          onClick={onSavePwd}
-        >
-          Сохранить
-        </Button>
+        <form onSubmit={onSavePwd}>
+          <PasswordInput
+            placeholder={"Введите новый пароль"}
+            onChange={onChangePassword}
+            value={valuePassword}
+            name={"password"}
+            extraClass="pt-3 pb-3"
+          />
+          <Input
+            type={"text"}
+            placeholder={"Введите код из письма"}
+            onChange={(e) => setValueCodeEmail(e.target.value)}
+            value={valueCodeEmail}
+            name={"codeEmail"}
+            error={false}
+            errorText={"Ошибка"}
+            size={"default"}
+            extraClass="mb-2 pt-3 pb-3"
+          />
+          <Button htmlType="submit">Сохранить</Button>
+        </form>
         <span className="pt-20 text text_type_main-small text_color_inactive">
           Вспомнили пароль?{" "}
           <Link to="/login" className={styles.links}>

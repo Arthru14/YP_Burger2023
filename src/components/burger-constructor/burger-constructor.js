@@ -182,16 +182,17 @@ function BurgerComponentsList() {
 }
 
 function PlaceOrder(props) {
-  const { getUser, ...auth } = useAuth();
+  const { user, getUser } = useAuth();
   const navigate = useNavigate();
+  const isLoggedIn = useSelector((store) => store.userReducer.isLoggedIn);
 
-  const init = async () => {
-    await getUser();
-  };
+  // const init = async () => {
+  //   await getUser();
+  // };
 
-  useEffect(() => {
-    init();
-  }, []);
+  // useEffect(() => {
+  //   init();
+  // }, []);
 
   const { isModalOpen, openModal, closeModal } = useModal();
 
@@ -201,8 +202,7 @@ function PlaceOrder(props) {
   );
 
   const handleOpenModal = () => {
-    console.log(auth);
-    if (!auth.user) {
+    if (!isLoggedIn) {
       navigate("/login");
       return false;
     }
@@ -229,9 +229,11 @@ function PlaceOrder(props) {
             Оформить заказ
           </Button>
           {isModalOpen && (
-            <Modal onClose={closeModal}>
+            <Modal onClose={closeModal} visible={isModalOpen}>
               {!currentOrderIsLoading ? (
-                <OrderDetails orderNum={orderNum} />
+                <>
+                  <OrderDetails orderNum={orderNum} />
+                </>
               ) : (
                 <p className="text text_type_main-medium">Загрузка данных...</p>
               )}
@@ -239,7 +241,7 @@ function PlaceOrder(props) {
           )}
         </>
       ) : (
-        <Button htmlType="button" type="primary" size="medium">
+        <Button htmlType="button" type="primary" size="medium" disabled>
           Собери свой бургер!
         </Button>
       )}

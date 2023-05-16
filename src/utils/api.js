@@ -20,12 +20,15 @@ export const PATCH_UPDATEPROFILEINFO_ENDPOINT = "auth/user";
 function checkResponse(res) {
   if (res.ok) {
     return res.json();
+  } else {
+    return Promise.reject(`Ошибка ${res.status}`);
   }
-  return Promise.reject(`Ошибка ${res.status}`);
 }
 
 export default async function requestToServer(url, options) {
-  return await fetch(BASE_URL + url, options).then(checkResponse);
+  return await fetch(BASE_URL + url, options)
+    .then(checkResponse)
+    .catch((e) => console.log(e));
 }
 
 export async function sendUserRegisterDataToServer(
@@ -33,149 +36,98 @@ export async function sendUserRegisterDataToServer(
   passwordIn,
   emailIn
 ) {
-  try {
-    const result = await requestToServer(LOGIN_REGISTER_ENDPOINT, {
-      method: "POST",
-      headers: {
-        Accept: "application/json",
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify({
-        email: emailIn,
-        password: passwordIn,
-        name: nameIn,
-      }),
-    });
-    if (result.success) {
-      return result;
-    }
-  } catch (error) {
-    console.log(error);
-  }
+  return await requestToServer(LOGIN_REGISTER_ENDPOINT, {
+    method: "POST",
+    headers: {
+      Accept: "application/json",
+      "Content-Type": "application/json",
+    },
+    body: JSON.stringify({
+      email: emailIn,
+      password: passwordIn,
+      name: nameIn,
+    }),
+  });
 }
 
 export const sendEmailCodeRequest = async (emailIn) => {
-  try {
-    const result = await requestToServer(PASSWORD_RESET_ENDPOINT, {
-      method: "POST",
-      headers: {
-        Accept: "application/json",
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify({
-        email: emailIn,
-      }),
-    });
-    if (result.success) {
-      return result.success;
-    }
-  } catch (error) {
-    console.log(error);
-  }
+  return await requestToServer(PASSWORD_RESET_ENDPOINT, {
+    method: "POST",
+    headers: {
+      Accept: "application/json",
+      "Content-Type": "application/json",
+    },
+    body: JSON.stringify({
+      email: emailIn,
+    }),
+  });
 };
 
 export const setNewPasswordRequest = async (passwordIn, emailCodeIn) => {
-  try {
-    const result = await requestToServer(PASSWORD_NEWSET_ENDPOINT, {
-      method: "POST",
-      headers: {
-        Accept: "application/json",
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify({
-        password: passwordIn,
-        token: emailCodeIn,
-      }),
-    });
-    if (result.success) {
-      return result.success;
-    }
-  } catch (error) {
-    console.log(error);
-  }
+  return await requestToServer(PASSWORD_NEWSET_ENDPOINT, {
+    method: "POST",
+    headers: {
+      Accept: "application/json",
+      "Content-Type": "application/json",
+    },
+    body: JSON.stringify({
+      password: passwordIn,
+      token: emailCodeIn,
+    }),
+  });
 };
 
 export const loginRequest = async (emailIn, pwdIn) => {
-  try {
-    const result = await requestToServer(LOGIN_ENDPOINT, {
-      method: "POST",
-      headers: {
-        Accept: "application/json",
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify({
-        email: emailIn,
-        password: pwdIn,
-      }),
-    });
-    if (result.success) {
-      return result;
-    }
-  } catch (error) {
-    console.log(error);
-  }
+  return await requestToServer(LOGIN_ENDPOINT, {
+    method: "POST",
+    headers: {
+      Accept: "application/json",
+      "Content-Type": "application/json",
+    },
+    body: JSON.stringify({
+      email: emailIn,
+      password: pwdIn,
+    }),
+  });
 };
 
 export const logoutRequest = async () => {
-  try {
-    const result = await requestToServer(LOGOUT_ENDPOINT, {
-      method: "POST",
-      headers: {
-        Accept: "application/json",
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify({
-        token: localStorage.getItem("refreshToken"),
-      }),
-    });
-    if (result.success) {
-      return result;
-    }
-  } catch (error) {
-    console.log(error);
-  }
+  return await requestToServer(LOGOUT_ENDPOINT, {
+    method: "POST",
+    headers: {
+      Accept: "application/json",
+      "Content-Type": "application/json",
+    },
+    body: JSON.stringify({
+      token: localStorage.getItem("refreshToken"),
+    }),
+  });
 };
 
 export const changeUserProfileRequest = async (nameIn, passwordIn, emailIn) => {
-  try {
-    const result = await requestToServer(PATCH_UPDATEPROFILEINFO_ENDPOINT, {
-      method: "PATCH",
-      headers: {
-        Accept: "application/json",
-        "Content-Type": "application/json",
-        authorization: getCookie("accessToken"),
-      },
-      body: JSON.stringify({
-        authorization: getCookie("accessToken"),
-        email: emailIn,
-        password: passwordIn,
-        name: nameIn,
-      }),
-    });
-    if (result.success) {
-      return result;
-    }
-    return null;
-  } catch (error) {
-    console.log(error);
-  }
+  return await requestToServer(PATCH_UPDATEPROFILEINFO_ENDPOINT, {
+    method: "PATCH",
+    headers: {
+      Accept: "application/json",
+      "Content-Type": "application/json",
+      authorization: getCookie("accessToken"),
+    },
+    body: JSON.stringify({
+      authorization: getCookie("accessToken"),
+      email: emailIn,
+      password: passwordIn,
+      name: nameIn,
+    }),
+  });
 };
 
 export const getUserRequest = async () => {
-  try {
-    const result = await requestToServer(GET_PROFILEINFO_ENDPOINT, {
-      method: "GET",
-      headers: {
-        Accept: "application/json",
-        "Content-Type": "application/json",
-        authorization: getCookie("accessToken"),
-      },
-    });
-    if (result.success) {
-      return result;
-    }
-    return null;
-  } catch (error) {
-    console.log(error);
-  }
+  return await requestToServer(GET_PROFILEINFO_ENDPOINT, {
+    method: "GET",
+    headers: {
+      Accept: "application/json",
+      "Content-Type": "application/json",
+      authorization: getCookie("accessToken"),
+    },
+  });
 };

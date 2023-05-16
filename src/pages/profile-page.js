@@ -8,19 +8,23 @@ import {
 } from "@ya.praktikum/react-developer-burger-ui-components";
 import { Link, useNavigate } from "react-router-dom";
 import { useAuth } from "../services/auth";
-import { useDispatch } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
 import { updateUserProfile } from "../services/actions/auth-creator";
 
 export function ProfilePage() {
   const userAuth = useAuth();
-  const savedName = userAuth.user.name;
-  const savedEmail = userAuth.user.email;
+  // const savedName = userAuth.user.name;
+  // const savedEmail = userAuth.user.email;
+  const { name, email } = useSelector(
+    (store) => store.userReducer.currentUser
+  );
+
   const dispatch = useDispatch();
   const navigate = useNavigate();
 
-  const [valueEmail, setValueEmail] = useState(savedEmail);
+  const [valueEmail, setValueEmail] = useState(email);
   const [valuePassword, setValuePassword] = useState("");
-  const [valueUserName, setValueUserName] = useState(savedName);
+  const [valueUserName, setValueUserName] = useState(name);
   const [isEditUserInfo, setIsEditUserInfo] = useState(false);
   const [isEditInfo, setIsEditInfo] = useState({
     name: true,
@@ -52,9 +56,9 @@ export function ProfilePage() {
   };
 
   const onCancelUserInfo = (e) => {
-    setValueEmail(savedEmail);
+    setValueEmail(email);
     setValuePassword("");
-    setValueUserName(savedName);
+    setValueUserName(name);
     setIsEditInfo({
       name: true,
       email: true,

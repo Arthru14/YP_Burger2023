@@ -6,7 +6,10 @@ import {
   RESET_PASSWORD,
   SAVE_PASSWORD,
   UPDATE_PROFILE,
-  // LOAD_PROFILE_FAILED,
+  GET_USER_REQUEST,
+  GET_USER_SUCCESS,
+  REGISTER_PROCESS,
+  LOGIN_PROCESS,
 } from "../actions/auth";
 
 const initialState = {
@@ -16,25 +19,35 @@ const initialState = {
     email: "",
     password: "",
   },
-  accessToken: "",
-  refreshToken: "",
+  // accessToken: "",
+  // refreshToken: "",
   resetSuccess: false,
   savePasswordSuccess: false,
   logoutSuccess: false,
+  isLoginProcess: false,
+  isLoggedIn: false,
+  isRegProcess: false,
+  getUserRequest: false,
 };
 
 export const userInfoReducer = (state = initialState, action) => {
   switch (action.type) {
+    case REGISTER_PROCESS:
+      return {
+        ...state,
+        isRegProcess: true,
+      };
     case REGISTER:
       return {
         ...state,
+        isRegProcess: false,
         currentUser: {
           ...state.currentUser,
           name: action.data.name,
           email: action.data.email,
         },
-        accessToken: action.data.accessToken,
-        refreshToken: action.data.refreshToken,
+        // accessToken: action.data.accessToken,
+        // refreshToken: action.data.refreshToken,
       };
     case RESET_PASSWORD:
       return {
@@ -47,21 +60,30 @@ export const userInfoReducer = (state = initialState, action) => {
         resetSuccess: false,
         savePasswordSuccess: true,
       };
+    case LOGIN_PROCESS:
+      return {
+        ...state,
+        isLoginProcess: true,
+      };
     case LOGIN:
       return {
         ...state,
         currentUser: {
           ...state.currentUser,
-          name: action.data.user.name,
-          email: action.data.user.email,
+          name: action.res.user.name,
+          email: action.res.user.email,
         },
-        accessToken: action.data.accessToken,
-        refreshToken: action.data.refreshToken,
+        // accessToken: action.res.accessToken,
+        // refreshToken: action.res.refreshToken,
+        isLoginProcess: false,
+        isLoggedIn: true,
+        getUserRequest: false,
       };
     case LOGOUT:
       return {
         ...initialState,
         logoutSuccess: true,
+        isLoggedIn: false,
       };
     case UPDATE_PROFILE:
       return {
@@ -73,14 +95,29 @@ export const userInfoReducer = (state = initialState, action) => {
           email: action.user.email,
         },
       };
-    // case LOAD_PROFILE_FAILED:
-    //   return {
-    //     ...state,
-    //     currentUser: {
-    //       ...state.currentUser,
-    //       loaded: true,
-    //     },
-    //   };
+    case GET_USER_REQUEST:
+      return {
+        ...state,
+        getUserRequest: true,
+        currentUser: {
+          ...state.currentUser,
+          name: "",
+          email: "",
+        },
+      };
+    case GET_USER_SUCCESS:
+      return {
+        ...state,
+        getUserRequest: false,
+        currentUser: {
+          ...state.currentUser,
+          name: action.res.user.name,
+          email: action.res.user.email,
+        },
+        // accessToken: action.accessToken,
+        // refreshToken: action.refreshToken,
+        isLoggedIn: true,
+      };
     case TOKEN:
       return state;
     default:

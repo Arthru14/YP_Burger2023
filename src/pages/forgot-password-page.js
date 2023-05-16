@@ -36,21 +36,16 @@ export function ForgotPasswordPage() {
         <span className="pb-3 text text_type_main-medium">
           Восстановление пароля
         </span>
-        <EmailInput
-          onChange={onChangeEmail}
-          value={valueEmail}
-          name={"email"}
-          isIcon={false}
-          extraClass="pt-3 pb-3"
-        />
-        <Button
-          htmlType="button"
-          type="primary"
-          size="medium"
-          onClick={onSendCode}
-        >
-          Восстановить
-        </Button>
+        <form onSubmit={onSendCode}>
+          <EmailInput
+            onChange={onChangeEmail}
+            value={valueEmail}
+            name={"email"}
+            isIcon={false}
+            extraClass="pt-3 pb-3"
+          />
+          <Button htmlType="submit">Восстановить</Button>
+        </form>
         <span className="pt-20 text text_type_main-small text_color_inactive">
           Вспомнили пароль?{" "}
           <Link to="/login" className={styles.links}>

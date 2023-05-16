@@ -1,5 +1,5 @@
 import React from "react";
-import { BrowserRouter as Router } from "react-router-dom";
+import { BrowserRouter as Router, useLocation } from "react-router-dom";
 import ReactDOM from "react-dom/client";
 import "./index.css";
 import reportWebVitals from "./reportWebVitals";
@@ -24,14 +24,17 @@ const enhancer = composeEnhancers(applyMiddleware(thunk));
 const store = createStore(rootReducer, enhancer);
 
 const root = ReactDOM.createRoot(document.getElementById("root"));
+
 root.render(
-  <Router>
+  <React.StrictMode>
     <Provider store={store}>
-      <DndProvider backend={HTML5Backend}>
-        <App />
-      </DndProvider>
+      <Router>
+        <DndProvider backend={HTML5Backend}>
+          <App />
+        </DndProvider>
+      </Router>
     </Provider>
-  </Router>
+  </React.StrictMode>
 );
 
 reportWebVitals();

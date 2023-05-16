@@ -1,5 +1,4 @@
-import React, { useEffect } from "react";
-import PropTypes from "prop-types";
+import { useEffect } from "react";
 import styles from "./ingredient-details.module.css";
 import { useSelector } from "react-redux";
 
@@ -7,12 +6,9 @@ export default function IngredientDetails() {
   const selectedItem = useSelector(
     (store) => store.ingredientReducer.selectedItem
   );
-  console.log(selectedItem);
   useEffect(() => {
     window.history.replaceState(null, null, "/ingredients/" + selectedItem._id);
   }, [selectedItem._id]);
-
-  console.log(selectedItem._id);
 
   return (
     <div className={styles.content}>
