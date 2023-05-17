@@ -28,7 +28,6 @@ export const IngridDetailPage = () => {
 
   return (
     <>
-      <span>test</span>
       {itemsOfIngrids.length && !existId(idFromPath) ? (
         <Navigate to="/404" />
       ) : (

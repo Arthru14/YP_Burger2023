@@ -45,10 +45,9 @@ function AppHeader() {
     location.pathname === "/forgot-password" ||
     location.pathname === "/reset-password";
 
-  const userName = useSelector((store) => store.userReducer.currentUser.name);
-  // const userAuth = useAuth();
-  // const userName = userAuth.user.name;
-  // const savedEmail = userAuth.user.email;
+  // const userName = useSelector((store) => store.userReducer.currentUser.name);
+  const userAuth = useAuth();
+  const userName = userAuth.user?.name;
 
   return (
     <header className={styles.header}>

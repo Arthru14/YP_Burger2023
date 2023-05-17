@@ -182,9 +182,9 @@ function BurgerComponentsList() {
 }
 
 function PlaceOrder(props) {
-  const { user, getUser } = useAuth();
+  const { ...auth } = useAuth();
   const navigate = useNavigate();
-  const isLoggedIn = useSelector((store) => store.userReducer.isLoggedIn);
+  // const isLoggedIn = useSelector((store) => store.userReducer.isLoggedIn);
 
   // const init = async () => {
   //   await getUser();
@@ -202,7 +202,7 @@ function PlaceOrder(props) {
   );
 
   const handleOpenModal = () => {
-    if (!isLoggedIn) {
+    if (!auth.user) {
       navigate("/login");
       return false;
     }

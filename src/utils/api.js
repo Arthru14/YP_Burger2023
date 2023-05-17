@@ -4,6 +4,7 @@ export const BASE_URL = "https://norma.nomoreparties.space/api/";
 export const INGRID_ENDPOINT = "ingredients";
 export const ORDER_ENDPOINT = "orders";
 export const LOGIN_REGISTER_ENDPOINT = "auth/register";
+export const REFRESH_TOKEN_ENDPOINT = "auth/token";
 export const LOGIN_ENDPOINT = "auth/login";
 export const LOGOUT_ENDPOINT = "auth/logout";
 export const NEWTOKEN_ENDPOINT = "auth/token";
@@ -20,23 +21,34 @@ export const PATCH_UPDATEPROFILEINFO_ENDPOINT = "auth/user";
 function checkResponse(res) {
   if (res.ok) {
     return res.json();
-  } else {
-    return Promise.reject(`Ошибка ${res.status}`);
   }
+  return Promise.reject(`Ошибка ${res.status}`);
 }
 
-export default async function requestToServer(url, options) {
-  return await fetch(BASE_URL + url, options)
+// функция проверки на `success`
+const checkSuccess = (res) => {
+  if (res && res.success) {
+    return res;
+  }
+  // не забываем выкидывать ошибку, чтобы она попала в `catch`
+  return Promise.reject(`Ответ не success: ${res}`);
+};
+
+// создаем универсальную фукнцию запроса с проверкой ответа и `success`
+// В вызов приходит `endpoint`(часть урла, которая идет после базового) и опции
+export const request = async (endpoint, options) => {
+  // а также в ней базовый урл сразу прописывается, чтобы не дублировать в каждом запросе
+  return await fetch(`${BASE_URL}${endpoint}`, options)
     .then(checkResponse)
-    .catch((e) => console.log(e));
-}
+    .then(checkSuccess);
+};
 
-export async function sendUserRegisterDataToServer(
-  nameIn,
-  passwordIn,
-  emailIn
-) {
-  return await requestToServer(LOGIN_REGISTER_ENDPOINT, {
+// export default async function requestToServer(url, options) {
+//   return await fetch(BASE_URL + url, options).then(checkResponse);
+// }
+
+export function sendUserRegisterDataToServer(nameIn, passwordIn, emailIn) {
+  return request(LOGIN_REGISTER_ENDPOINT, {
     method: "POST",
     headers: {
       Accept: "application/json",
@@ -50,8 +62,27 @@ export async function sendUserRegisterDataToServer(
   });
 }
 
-export const sendEmailCodeRequest = async (emailIn) => {
-  return await requestToServer(PASSWORD_RESET_ENDPOINT, {
+// export async function sendUserRegisterDataToServer(
+//   nameIn,
+//   passwordIn,
+//   emailIn
+// ) {
+//   return await requestToServer(LOGIN_REGISTER_ENDPOINT, {
+//     method: "POST",
+//     headers: {
+//       Accept: "application/json",
+//       "Content-Type": "application/json",
+//     },
+//     body: JSON.stringify({
+//       email: emailIn,
+//       password: passwordIn,
+//       name: nameIn,
+//     }),
+//   });
+// }
+
+export function sendEmailCodeRequest(emailIn) {
+  return request(PASSWORD_RESET_ENDPOINT, {
     method: "POST",
     headers: {
       Accept: "application/json",
@@ -61,10 +92,23 @@ export const sendEmailCodeRequest = async (emailIn) => {
       email: emailIn,
     }),
   });
-};
+}
 
-export const setNewPasswordRequest = async (passwordIn, emailCodeIn) => {
-  return await requestToServer(PASSWORD_NEWSET_ENDPOINT, {
+// export const sendEmailCodeRequest = async (emailIn) => {
+//   return await requestToServer(PASSWORD_RESET_ENDPOINT, {
+//     method: "POST",
+//     headers: {
+//       Accept: "application/json",
+//       "Content-Type": "application/json",
+//     },
+//     body: JSON.stringify({
+//       email: emailIn,
+//     }),
+//   });
+// };
+
+export function setNewPasswordRequest(passwordIn, emailCodeIn) {
+  return request(PASSWORD_NEWSET_ENDPOINT, {
     method: "POST",
     headers: {
       Accept: "application/json",
@@ -75,10 +119,24 @@ export const setNewPasswordRequest = async (passwordIn, emailCodeIn) => {
       token: emailCodeIn,
     }),
   });
-};
+}
 
-export const loginRequest = async (emailIn, pwdIn) => {
-  return await requestToServer(LOGIN_ENDPOINT, {
+// export const setNewPasswordRequest = async (passwordIn, emailCodeIn) => {
+//   return await requestToServer(PASSWORD_NEWSET_ENDPOINT, {
+//     method: "POST",
+//     headers: {
+//       Accept: "application/json",
+//       "Content-Type": "application/json",
+//     },
+//     body: JSON.stringify({
+//       password: passwordIn,
+//       token: emailCodeIn,
+//     }),
+//   });
+// }
+
+export function loginRequest(emailIn, pwdIn) {
+  return request(LOGIN_ENDPOINT, {
     method: "POST",
     headers: {
       Accept: "application/json",
@@ -89,10 +147,10 @@ export const loginRequest = async (emailIn, pwdIn) => {
       password: pwdIn,
     }),
   });
-};
+}
 
-export const logoutRequest = async () => {
-  return await requestToServer(LOGOUT_ENDPOINT, {
+export function refreshRequest() {
+  return request(REFRESH_TOKEN_ENDPOINT, {
     method: "POST",
     headers: {
       Accept: "application/json",
@@ -102,10 +160,50 @@ export const logoutRequest = async () => {
       token: localStorage.getItem("refreshToken"),
     }),
   });
-};
+}
 
-export const changeUserProfileRequest = async (nameIn, passwordIn, emailIn) => {
-  return await requestToServer(PATCH_UPDATEPROFILEINFO_ENDPOINT, {
+// export const loginRequest = async (emailIn, pwdIn) => {
+//   return await requestToServer(LOGIN_ENDPOINT, {
+//     method: "POST",
+//     headers: {
+//       Accept: "application/json",
+//       "Content-Type": "application/json",
+//     },
+//     body: JSON.stringify({
+//       email: emailIn,
+//       password: pwdIn,
+//     }),
+//   });
+// };
+
+export function logoutRequest() {
+  return request(LOGOUT_ENDPOINT, {
+    method: "POST",
+    headers: {
+      Accept: "application/json",
+      "Content-Type": "application/json",
+    },
+    body: JSON.stringify({
+      token: localStorage.getItem("refreshToken"),
+    }),
+  });
+}
+
+// export const logoutRequest = async () => {
+//   return await requestToServer(LOGOUT_ENDPOINT, {
+//     method: "POST",
+//     headers: {
+//       Accept: "application/json",
+//       "Content-Type": "application/json",
+//     },
+//     body: JSON.stringify({
+//       token: localStorage.getItem("refreshToken"),
+//     }),
+//   });
+// };
+
+export function changeUserProfileRequest(nameIn, passwordIn, emailIn) {
+  return request(PATCH_UPDATEPROFILEINFO_ENDPOINT, {
     method: "PATCH",
     headers: {
       Accept: "application/json",
@@ -119,10 +217,27 @@ export const changeUserProfileRequest = async (nameIn, passwordIn, emailIn) => {
       name: nameIn,
     }),
   });
-};
+}
 
-export const getUserRequest = async () => {
-  return await requestToServer(GET_PROFILEINFO_ENDPOINT, {
+// export const changeUserProfileRequest = async (nameIn, passwordIn, emailIn) => {
+//   return await requestToServer(PATCH_UPDATEPROFILEINFO_ENDPOINT, {
+//     method: "PATCH",
+//     headers: {
+//       Accept: "application/json",
+//       "Content-Type": "application/json",
+//       authorization: getCookie("accessToken"),
+//     },
+//     body: JSON.stringify({
+//       authorization: getCookie("accessToken"),
+//       email: emailIn,
+//       password: passwordIn,
+//       name: nameIn,
+//     }),
+//   });
+// };
+
+export function getUserRequest() {
+  return request(GET_PROFILEINFO_ENDPOINT, {
     method: "GET",
     headers: {
       Accept: "application/json",
@@ -130,4 +245,15 @@ export const getUserRequest = async () => {
       authorization: getCookie("accessToken"),
     },
   });
-};
+}
+
+// export const getUserRequest = async () => {
+//   return await requestToServer(GET_PROFILEINFO_ENDPOINT, {
+//     method: "GET",
+//     headers: {
+//       Accept: "application/json",
+//       "Content-Type": "application/json",
+//       authorization: getCookie("accessToken"),
+//     },
+//   });
+// };

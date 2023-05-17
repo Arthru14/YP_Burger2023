@@ -1,11 +1,11 @@
-import requestToServer, { ORDER_ENDPOINT } from "../../utils/api";
+import { request, ORDER_ENDPOINT } from "../../utils/api";
 import { makeOrder, makeOrderFailed, makeOrderSuccess } from "./action-creator";
 
 export function getOrderFromServer(addedIngreds) {
   return function (dispatch) {
     dispatch(makeOrder());
 
-    const data = requestToServer(ORDER_ENDPOINT, {
+    const data = request(ORDER_ENDPOINT, {
       method: "POST",
       headers: {
         Accept: "application/json",
@@ -15,11 +15,7 @@ export function getOrderFromServer(addedIngreds) {
         ingredients: addedIngreds.map(({ ingridId }) => ingridId),
       }),
     })
-      .then((result) => {
-        if (result.success) {
-          dispatch(makeOrderSuccess(result.order.number));
-        }
-      })
+      .then((res) => dispatch(makeOrderSuccess(res.order.number)))
       .catch((error) => {
         console.log(error);
         dispatch(makeOrderFailed());

@@ -23,33 +23,31 @@ export function useAuth() {
 }
 
 export function useProvideAuth() {
-  const dispatch = useDispatch();
+  // const dispatch = useDispatch();
   const [user, setUser] = useState(null);
-  const { name, email } = useSelector((store) => store.userReducer.currentUser);
+  // const { name, email } = useSelector((store) => store.userReducer.currentUser);
 
-  const getUser = () => {
-    // dispatch(getUserAction());
-    setUser({ name: name, email: email });
-  };
-
-  // const getUser = async () => {
-  //   try {
-  //     const data = await getUserRequest().then((res) => {
-  //       console.log(res);
-  //       setUser({ name: res.user.name, email: res.user.email });
-  //     });
-  //   } catch (ex) {
-  //     console.log(ex.message);
-  //   }
+  // const getUser = () => {
+  //   // dispatch(getUserAction());
+  //   setUser({ name: name, email: email });
   // };
+
+  const getUser = async () => {
+    try {
+      const data = await getUserRequest();
+      setUser({ name: data.user.name, email: data.user.email });
+    } catch (ex) {
+      console.log(ex.message);
+    }
+  };
 
   const signIn = async (email, password) => {
     try {
-      dispatch({ type: LOGIN_PROCESS });
-      dispatch(loginAction(email, password));
-      // const data = await loginRequest(email, password);
-      // setCookie("accessToken", data.accessToken);
-      // localStorage.setItem("refreshToken", data.refreshToken);
+      // dispatch({ type: LOGIN_PROCESS });
+      // dispatch(loginAction(email, password));
+      const data = await loginRequest(email, password);
+      setCookie("accessToken", data.accessToken);
+      localStorage.setItem("refreshToken", data.refreshToken);
     } catch (ex) {
       console.log(ex.message);
     }
@@ -65,10 +63,10 @@ export function useProvideAuth() {
 
   const signOut = async () => {
     try {
-      dispatch(logoutAction());
-      // await logoutRequest();
-      // deleteCookie("accessToken");
-      // localStorage.removeItem("refreshToken");
+      // dispatch(logoutAction());
+      await logoutRequest();
+      deleteCookie("accessToken");
+      localStorage.removeItem("refreshToken");
       setUser(null);
     } catch (ex) {
       console.log(ex.message);

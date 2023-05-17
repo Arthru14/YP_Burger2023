@@ -13,18 +13,16 @@ import { updateUserProfile } from "../services/actions/auth-creator";
 
 export function ProfilePage() {
   const userAuth = useAuth();
-  // const savedName = userAuth.user.name;
-  // const savedEmail = userAuth.user.email;
-  const { name, email } = useSelector(
-    (store) => store.userReducer.currentUser
-  );
+  const savedName = userAuth.user.name;
+  const savedEmail = userAuth.user.email;
+  // const { name, email } = useSelector((store) => store.userReducer.currentUser);
 
   const dispatch = useDispatch();
   const navigate = useNavigate();
 
-  const [valueEmail, setValueEmail] = useState(email);
+  const [valueEmail, setValueEmail] = useState(savedEmail);
   const [valuePassword, setValuePassword] = useState("");
-  const [valueUserName, setValueUserName] = useState(name);
+  const [valueUserName, setValueUserName] = useState(savedName);
   const [isEditUserInfo, setIsEditUserInfo] = useState(false);
   const [isEditInfo, setIsEditInfo] = useState({
     name: true,
@@ -56,9 +54,9 @@ export function ProfilePage() {
   };
 
   const onCancelUserInfo = (e) => {
-    setValueEmail(email);
+    setValueEmail(savedEmail);
     setValuePassword("");
-    setValueUserName(name);
+    setValueUserName(savedName);
     setIsEditInfo({
       name: true,
       email: true,

@@ -9,11 +9,14 @@ import {
 import { Link, useNavigate } from "react-router-dom";
 import { useDispatch, useSelector } from "react-redux";
 import { registerNewUser } from "../services/actions/auth-creator";
+import { useAuth } from "../services/auth";
 
 export function RegisterPage() {
   const dispatch = useDispatch();
-  const userName = useSelector((store) => store.userReducer.currentUser.name);
+  // const userName = useSelector((store) => store.userReducer.currentUser.name);
   const navigate = useNavigate();
+  const userAuth = useAuth();
+  const userName = userAuth.user?.name;
 
   const [valueEmail, setValueEmail] = useState("shmakov.arthur@yandex.ru7");
   const [valuePassword, setValuePassword] = useState("111111");

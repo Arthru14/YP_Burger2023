@@ -1,4 +1,4 @@
-import { useEffect } from "react";
+import { useEffect, useLayoutEffect } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import {
   BrowserRouter as Router,
@@ -43,60 +43,49 @@ function App() {
 
   return (
     <>
-      <ProvideAuth>
-        <AppHeader />
-        <Routes location={background || location}>
-          <Route path="/" element={<MainPage />} />
+      <AppHeader />
+      <Routes location={background || location}>
+        <Route path="/" element={<MainPage />} />
+        <Route path="/ingredients/:idFromPath" element={<IngridDetailPage />} />
+        <Route
+          path="/profile"
+          element={<ProtectedRoute element={<ProfilePage />} />}
+        />
+        <Route
+          path="/profile/orderhistory"
+          element={<ProtectedRoute element={<OrderHistoryPage />} />}
+        />
+        <Route path="/login" element={<LoginPage />} />
+        <Route
+          path="/logout"
+          element={<ProtectedRoute element={<LogoutPage />} />}
+        />
+        <Route
+          path="/register"
+          element={
+            <ProtectedRoute anonymous={true} element={<RegisterPage />} />
+          }
+        />
+        <Route
+          path="/forgot-password"
+          element={
+            <ProtectedRoute anonymous={true} element={<ForgotPasswordPage />} />
+          }
+        />
+        <Route
+          path="/reset-password"
+          element={
+            <ProtectedRoute anonymous={true} element={<ResetPasswordPage />} />
+          }
+        />
+        <Route path="*" element={<NotFound404 />} />
+        {background && (
           <Route
             path="/ingredients/:idFromPath"
-            element={<IngridDetailPage />}
+            element={<IngredientDetails />}
           />
-          <Route path="/login" element={<LoginPage />} />
-          <Route
-            path="/profile"
-            element={<ProtectedRoute element={<ProfilePage />} />}
-          />
-          <Route
-            path="/profile/orderhistory"
-            element={<ProtectedRoute element={<OrderHistoryPage />} />}
-          />
-          <Route
-            path="/logout"
-            element={<ProtectedRoute element={<LogoutPage />} />}
-          />
-          <Route
-            path="/register"
-            element={
-              <ProtectedRoute anonymous={true} element={<RegisterPage />} />
-            }
-          />
-          <Route
-            path="/forgot-password"
-            element={
-              <ProtectedRoute
-                anonymous={true}
-                element={<ForgotPasswordPage />}
-              />
-            }
-          />
-          <Route
-            path="/reset-password"
-            element={
-              <ProtectedRoute
-                anonymous={true}
-                element={<ResetPasswordPage />}
-              />
-            }
-          />
-          <Route path="*" element={<NotFound404 />} />
-          {background && (
-            <Route
-              path="/ingredients/:idFromPath"
-              element={<IngredientDetails />}
-            />
-          )}
-        </Routes>
-      </ProvideAuth>
+        )}
+      </Routes>
     </>
   );
 }
