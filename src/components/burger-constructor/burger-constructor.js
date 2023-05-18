@@ -1,4 +1,4 @@
-import { useState, useEffect, useMemo, useRef } from "react";
+import { useEffect, useRef } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import styles from "./burger-constructor.module.css";
 import { ConstructorElement } from "@ya.praktikum/react-developer-burger-ui-components";
@@ -9,18 +9,16 @@ import Modal from "../modal/modal";
 import OrderDetails from "../order-details/order-details";
 import NoItem from "../../images/no-item.png";
 import { useDrag, useDrop } from "react-dnd";
-import requestToServer, { BASE_URL, ORDER_ENDPOINT } from "../../utils/api";
 import { useModal } from "../../hooks/useModal";
 import {
   addBunToConstructor,
   addIngridToConstructor,
-  makeOrder,
-  makeOrderFailed,
-  makeOrderSuccess,
   moveComponentOfBurger,
   removeComponentFromBurger,
 } from "../../services/actions/action-creator";
 import { getOrderFromServer } from "../../services/actions/get-order";
+import { useAuth } from "../../services/auth";
+import { useNavigate } from "react-router-dom";
 
 function BurgerComponentItem(props) {
   const dispatch = useDispatch();
@@ -184,6 +182,18 @@ function BurgerComponentsList() {
 }
 
 function PlaceOrder(props) {
+  const { ...auth } = useAuth();
+  const navigate = useNavigate();
+  // const isLoggedIn = useSelector((store) => store.userReducer.isLoggedIn);
+
+  // const init = async () => {
+  //   await getUser();
+  // };
+
+  // useEffect(() => {
+  //   init();
+  // }, []);
+
   const { isModalOpen, openModal, closeModal } = useModal();
 
   const dispatch = useDispatch();
@@ -192,6 +202,10 @@ function PlaceOrder(props) {
   );
 
   const handleOpenModal = () => {
+    if (!auth.user) {
+      navigate("/login");
+      return false;
+    }
     dispatch(getOrderFromServer(addedIngreds));
     !currentOrderIsLoading && openModal();
   };
@@ -215,9 +229,11 @@ function PlaceOrder(props) {
             Оформить заказ
           </Button>
           {isModalOpen && (
-            <Modal onClose={closeModal}>
+            <Modal onClose={closeModal} visible={isModalOpen}>
               {!currentOrderIsLoading ? (
-                <OrderDetails orderNum={orderNum} />
+                <>
+                  <OrderDetails orderNum={orderNum} />
+                </>
               ) : (
                 <p className="text text_type_main-medium">Загрузка данных...</p>
               )}
@@ -225,7 +241,7 @@ function PlaceOrder(props) {
           )}
         </>
       ) : (
-        <Button htmlType="button" type="primary" size="medium">
+        <Button htmlType="button" type="primary" size="medium" disabled>
           Собери свой бургер!
         </Button>
       )}

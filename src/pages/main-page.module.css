@@ -1,0 +1,15 @@
+.wrapper {
+  display: flex;
+  justify-content: center;
+  width: 100%;
+  /* flex: 1 1 auto; */
+  overflow: hidden;
+}
+
+.content {
+  display: flex;
+  justify-content: space-between;
+  width: 1240px;
+  align-items: start;
+  overflow: hidden;
+}

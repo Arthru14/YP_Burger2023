@@ -15,6 +15,7 @@ import {
 } from "../../services/actions/burger-ingredients";
 import { useDrag } from "react-dnd";
 import { useModal } from "../../hooks/useModal";
+import { Link, useLocation, useNavigate } from "react-router-dom";
 
 function Tabs(props) {
   return (
@@ -42,6 +43,8 @@ function PriceOut(props) {
 }
 
 function ItemOfBurger(props) {
+  const location = useLocation();
+
   const { isBun, id, price } = props;
   const [, dragRef] = useDrag({
     type: "burger",
@@ -54,17 +57,26 @@ function ItemOfBurger(props) {
   const count = addedIngreds.filter((item) => item.ingridId === id).length;
 
   return (
-    <div
-      className={`${styles.ingridItem} pr-3 pl-3 pt-6 pb-2`}
-      onClick={() => props.onClick(true)}
+    <Link
+      to={{
+        pathname: `/ingredients/${props.id}`,
+      }}
+      state={{ background: location }}
     >
-      <div className={styles.item_of_burger} key={props.id} ref={dragRef}>
-        <img src={props.img} alt={props.name} />
-        {count > 0 && <Counter count={count} size="default" extraClass="m-1" />}
+      <div
+        className={`${styles.ingridItem} pr-3 pl-3 pt-6 pb-2`}
+        onClick={() => props.onClick(true)}
+      >
+        <div className={styles.item_of_burger} key={props.id} ref={dragRef}>
+          <img src={props.img} alt={props.name} />
+          {count > 0 && (
+            <Counter count={count} size="default" extraClass="m-1" />
+          )}
+        </div>
+        <PriceOut price={props.price} />
+        <span className="ext text_type_main-default">{props.name}</span>
       </div>
-      <PriceOut price={props.price} />
-      <span className="ext text_type_main-default">{props.name}</span>
-    </div>
+    </Link>
   );
 }
 
@@ -80,6 +92,8 @@ function BurgerIngredients() {
   });
 
   const dispatch = useDispatch();
+  const navigate = useNavigate();
+
   const burgerData = useSelector(
     (store) => store.ingredientReducer.itemsOfIngrids
   );
@@ -121,8 +135,8 @@ function BurgerIngredients() {
               return ingridItem.type === "bun" ? (
                 <ItemOfBurger
                   isBun
-                  key={ingridItem._id}
                   count={2}
+                  key={ingridItem._id}
                   price={ingridItem.price}
                   img={ingridItem.image}
                   name={ingridItem.name}
@@ -191,18 +205,13 @@ function BurgerIngredients() {
           <Modal
             onClose={() => {
               closeModal();
+              window.history.replaceState(null, null, "/");
               dispatch({ type: CLEAR_SELECTED_INGREDIENT });
             }}
             title="Детали ингредиента"
+            visible={!!selectedItem._id}
           >
-            <IngredientDetails
-              name={selectedItem.name}
-              imageLarge={selectedItem.image_large}
-              calories={selectedItem.calories}
-              proteins={selectedItem.proteins}
-              fat={selectedItem.fat}
-              carbohydrates={selectedItem.carbohydrates}
-            />
+            <IngredientDetails />
           </Modal>
         )}
       </div>
@@ -211,7 +220,3 @@ function BurgerIngredients() {
 }
 
 export default BurgerIngredients;
-
-// BurgerIngredients.propTypes = {
-//   burgerData: PropTypes.arrayOf(ServerDataTypes.isRequired),
-// };
