@@ -13,12 +13,7 @@ export const PASSWORD_RESET_ENDPOINT = "password-reset";
 export const GET_PROFILEINFO_ENDPOINT = "auth/user";
 export const PATCH_UPDATEPROFILEINFO_ENDPOINT = "auth/user";
 
-// POST https://norma.nomoreparties.space/api/auth/login - эндпоинт для авторизации.
-// POST https://norma.nomoreparties.space/api/auth/register - эндпоинт для регистрации пользователя.
-// POST https://norma.nomoreparties.space/api/auth/logout - эндпоинт для выхода из системы.
-// POST https://norma.nomoreparties.space/api/auth/token - эндпоинт обновления токена.
-
-function checkResponse(res) {
+function checkResponse(res: Response) {
   if (res.ok) {
     return res.json();
   }
@@ -26,7 +21,7 @@ function checkResponse(res) {
 }
 
 // функция проверки на `success`
-const checkSuccess = (res) => {
+const checkSuccess = (res: any) => {
   if (res && res.success) {
     return res;
   }
@@ -36,18 +31,18 @@ const checkSuccess = (res) => {
 
 // создаем универсальную фукнцию запроса с проверкой ответа и `success`
 // В вызов приходит `endpoint`(часть урла, которая идет после базового) и опции
-export const request = async (endpoint, options) => {
+export const request = async (endpoint: string, options?: any) => {
   // а также в ней базовый урл сразу прописывается, чтобы не дублировать в каждом запросе
   return await fetch(`${BASE_URL}${endpoint}`, options)
     .then(checkResponse)
     .then(checkSuccess);
 };
 
-// export default async function requestToServer(url, options) {
-//   return await fetch(BASE_URL + url, options).then(checkResponse);
-// }
-
-export function sendUserRegisterDataToServer(nameIn, passwordIn, emailIn) {
+export function sendUserRegisterDataToServer(
+  nameIn: string,
+  passwordIn: string,
+  emailIn: string
+) {
   return request(LOGIN_REGISTER_ENDPOINT, {
     method: "POST",
     headers: {
@@ -62,26 +57,7 @@ export function sendUserRegisterDataToServer(nameIn, passwordIn, emailIn) {
   });
 }
 
-// export async function sendUserRegisterDataToServer(
-//   nameIn,
-//   passwordIn,
-//   emailIn
-// ) {
-//   return await requestToServer(LOGIN_REGISTER_ENDPOINT, {
-//     method: "POST",
-//     headers: {
-//       Accept: "application/json",
-//       "Content-Type": "application/json",
-//     },
-//     body: JSON.stringify({
-//       email: emailIn,
-//       password: passwordIn,
-//       name: nameIn,
-//     }),
-//   });
-// }
-
-export function sendEmailCodeRequest(emailIn) {
+export function sendEmailCodeRequest(emailIn: string) {
   return request(PASSWORD_RESET_ENDPOINT, {
     method: "POST",
     headers: {
@@ -94,20 +70,7 @@ export function sendEmailCodeRequest(emailIn) {
   });
 }
 
-// export const sendEmailCodeRequest = async (emailIn) => {
-//   return await requestToServer(PASSWORD_RESET_ENDPOINT, {
-//     method: "POST",
-//     headers: {
-//       Accept: "application/json",
-//       "Content-Type": "application/json",
-//     },
-//     body: JSON.stringify({
-//       email: emailIn,
-//     }),
-//   });
-// };
-
-export function setNewPasswordRequest(passwordIn, emailCodeIn) {
+export function setNewPasswordRequest(passwordIn: string, emailCodeIn: string) {
   return request(PASSWORD_NEWSET_ENDPOINT, {
     method: "POST",
     headers: {
@@ -121,21 +84,7 @@ export function setNewPasswordRequest(passwordIn, emailCodeIn) {
   });
 }
 
-// export const setNewPasswordRequest = async (passwordIn, emailCodeIn) => {
-//   return await requestToServer(PASSWORD_NEWSET_ENDPOINT, {
-//     method: "POST",
-//     headers: {
-//       Accept: "application/json",
-//       "Content-Type": "application/json",
-//     },
-//     body: JSON.stringify({
-//       password: passwordIn,
-//       token: emailCodeIn,
-//     }),
-//   });
-// }
-
-export function loginRequest(emailIn, pwdIn) {
+export function loginRequest(emailIn: string, pwdIn: string) {
   return request(LOGIN_ENDPOINT, {
     method: "POST",
     headers: {
@@ -162,20 +111,6 @@ export function refreshRequest() {
   });
 }
 
-// export const loginRequest = async (emailIn, pwdIn) => {
-//   return await requestToServer(LOGIN_ENDPOINT, {
-//     method: "POST",
-//     headers: {
-//       Accept: "application/json",
-//       "Content-Type": "application/json",
-//     },
-//     body: JSON.stringify({
-//       email: emailIn,
-//       password: pwdIn,
-//     }),
-//   });
-// };
-
 export function logoutRequest() {
   return request(LOGOUT_ENDPOINT, {
     method: "POST",
@@ -189,20 +124,11 @@ export function logoutRequest() {
   });
 }
 
-// export const logoutRequest = async () => {
-//   return await requestToServer(LOGOUT_ENDPOINT, {
-//     method: "POST",
-//     headers: {
-//       Accept: "application/json",
-//       "Content-Type": "application/json",
-//     },
-//     body: JSON.stringify({
-//       token: localStorage.getItem("refreshToken"),
-//     }),
-//   });
-// };
-
-export function changeUserProfileRequest(nameIn, passwordIn, emailIn) {
+export function changeUserProfileRequest(
+  nameIn: string,
+  passwordIn: string,
+  emailIn: string
+) {
   return request(PATCH_UPDATEPROFILEINFO_ENDPOINT, {
     method: "PATCH",
     headers: {
@@ -219,23 +145,6 @@ export function changeUserProfileRequest(nameIn, passwordIn, emailIn) {
   });
 }
 
-// export const changeUserProfileRequest = async (nameIn, passwordIn, emailIn) => {
-//   return await requestToServer(PATCH_UPDATEPROFILEINFO_ENDPOINT, {
-//     method: "PATCH",
-//     headers: {
-//       Accept: "application/json",
-//       "Content-Type": "application/json",
-//       authorization: getCookie("accessToken"),
-//     },
-//     body: JSON.stringify({
-//       authorization: getCookie("accessToken"),
-//       email: emailIn,
-//       password: passwordIn,
-//       name: nameIn,
-//     }),
-//   });
-// };
-
 export function getUserRequest() {
   return request(GET_PROFILEINFO_ENDPOINT, {
     method: "GET",
@@ -246,14 +155,3 @@ export function getUserRequest() {
     },
   });
 }
-
-// export const getUserRequest = async () => {
-//   return await requestToServer(GET_PROFILEINFO_ENDPOINT, {
-//     method: "GET",
-//     headers: {
-//       Accept: "application/json",
-//       "Content-Type": "application/json",
-//       authorization: getCookie("accessToken"),
-//     },
-//   });
-// };

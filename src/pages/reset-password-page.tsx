@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { ChangeEvent, FormEvent, useEffect, useState } from "react";
 import styles from "./reset-password-page.module.css";
 import {
   PasswordInput,
@@ -6,19 +6,22 @@ import {
   Button,
 } from "@ya.praktikum/react-developer-burger-ui-components";
 import { Link, useLocation, useNavigate } from "react-router-dom";
-import { useDispatch, useSelector } from "react-redux";
+import { useSelector } from "react-redux";
 import { saveNewPassword } from "../services/actions/auth-creator";
+import { useAppDispatch } from "..";
 
 export function ResetPasswordPage() {
-  const dispatch = useDispatch();
+  const dispatch = useAppDispatch();
   const location = useLocation();
   const navigate = useNavigate();
 
-  const resetSuccess = useSelector((store) => store.userReducer.resetSuccess);
+  const resetSuccess = useSelector(
+    (store: any) => store.userReducer.resetSuccess
+  );
   const [valuePassword, setValuePassword] = useState("bob@example.com");
   const [valueCodeEmail, setValueCodeEmail] = useState("");
   const savePasswordSuccess = useSelector(
-    (store) => store.userReducer.savePasswordSuccess
+    (store: any) => store.userReducer.savePasswordSuccess
   );
 
   useEffect(() => {
@@ -37,11 +40,11 @@ export function ResetPasswordPage() {
     }
   }, [location.state, savePasswordSuccess, navigate]);
 
-  const onChangePassword = (e) => {
+  const onChangePassword = (e: ChangeEvent<HTMLInputElement>) => {
     setValuePassword(e.target.value);
   };
 
-  const onSavePwd = (e) => {
+  const onSavePwd = (e: FormEvent) => {
     e.preventDefault();
     dispatch(saveNewPassword(valuePassword, valueCodeEmail));
   };

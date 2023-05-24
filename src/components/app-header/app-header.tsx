@@ -7,11 +7,23 @@ import {
   ProfileIcon,
   Button,
 } from "@ya.praktikum/react-developer-burger-ui-components";
-import { useSelector } from "react-redux";
 import { useAuth } from "../../services/auth";
+import { FC } from "react";
 
-const NavLink = ({ title, icon, link, currentPage }) => {
-  const Icon = icon;
+interface INavLinkProps {
+  title: string,
+  icon: any,
+  link: string,
+  currentPage: boolean,
+}
+
+interface IIcon {
+  type: string,
+  className: string, 
+}
+
+const NavLink: FC<INavLinkProps> = ({ title, icon, link, currentPage }) => {
+  const Icon:FC<IIcon> = icon;
   return (
     <Link to={link}>
       <Button

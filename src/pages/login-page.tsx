@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { ChangeEvent, FormEvent, useState } from "react";
 import styles from "./login-page.module.css";
 import {
   EmailInput,
@@ -7,9 +7,8 @@ import {
 } from "@ya.praktikum/react-developer-burger-ui-components";
 import { Link, useLocation, useNavigate } from "react-router-dom";
 import { useAuth } from "../services/auth";
-import { useForm } from "../hooks/useForm";
 
-export function LoginPage() {
+export const LoginPage = () => {
   const { signIn } = useAuth();
   const navigate = useNavigate();
   const location = useLocation();
@@ -18,15 +17,15 @@ export function LoginPage() {
   const [valueEmail, setValueEmail] = useState("shmakov.arthur@yandex.ru");
   const [valuePassword, setValuePassword] = useState("222222");
 
-  const onChangeEmail = (e) => {
+  const onChangeEmail = (e: ChangeEvent<HTMLInputElement>) => {
     setValueEmail(e.target.value);
   };
 
-  const onChangePassword = (e) => {
+  const onChangePassword = (e: ChangeEvent<HTMLInputElement>) => {
     setValuePassword(e.target.value);
   };
 
-  const onEnter = (e) => {
+  const onEnter = (e: FormEvent) => {
     e.preventDefault();
     signIn(valueEmail, valuePassword).then(function () {
       navigate(from, { replace: true });

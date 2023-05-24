@@ -1,8 +1,13 @@
-export function deleteCookie(name) {
-  setCookie(name, null, { expires: -1 });
+interface TSetCookieOpt {
+  [x: string]: any; 
+  expires?: any;
 }
 
-export function setCookie(name, value, opt) {
+export function deleteCookie(name: string) {
+  setCookie(name, "", { expires: -1 });
+}
+
+export function setCookie(name: string, value: string | number | boolean, opt?: TSetCookieOpt) {
   opt = opt || {};
   let exp = opt.expires;
   if (typeof exp == "number" && exp) {
@@ -25,7 +30,7 @@ export function setCookie(name, value, opt) {
   document.cookie = updatedCookie;
 }
 
-export function getCookie(name) {
+export function getCookie(name: string) {
   const matches = document.cookie.match(
     new RegExp(
       "(?:^|; )" +

@@ -1,16 +1,15 @@
-import { useEffect, useLayoutEffect } from "react";
+import { useLayoutEffect } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { Navigate, useParams } from "react-router";
 import IngredientDetails from "../components/ingredient-details/ingredient-details";
 import { CHANGE_SELECTED_INGREDIENT } from "../services/actions/burger-ingredients.js";
-import { getBurgerData } from "../services/actions/app";
 
 export const IngridDetailPage = () => {
-  const { idFromPath } = useParams();
+  const { idFromPath } = useParams<string>();
   const dispatch = useDispatch();
 
   const { itemsOfIngrids, selectedItem } = useSelector(
-    (store) => store.ingredientReducer
+    (store: any) => store.ingredientReducer
   );
 
   useLayoutEffect(() => {
@@ -22,8 +21,8 @@ export const IngridDetailPage = () => {
     }
   }, [itemsOfIngrids, idFromPath, dispatch]);
 
-  const existId = (id) => {
-    return itemsOfIngrids.some((ingredient) => ingredient._id === id);
+  const existId = (id: string | undefined) => {
+    return itemsOfIngrids.some((ingredient: { _id: string; }) => ingredient._id === id);
   };
 
   return (
