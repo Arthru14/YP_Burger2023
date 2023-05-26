@@ -28,13 +28,13 @@ const ProtectedRouteElement: FC<IProtectedRouteElementProps> = ({
   if (!isUserLoaded) return null;
 
   // Если разрешен неавторизованный доступ, а пользователь авторизован...
-  if (anonymous && Boolean(auth.user)) {
+  if (anonymous && auth.user) {
     // ...то отправляем его на предыдущую страницу
     return <Navigate to={from} />;
   }
 
   // Если требуется авторизация, а пользователь не авторизован...
-  if (!anonymous && !Boolean(auth.user)) {
+  if (!anonymous && !auth.user) {
     // ...то отправляем его на страницу логин
     return <Navigate to="/login" state={{ from: location }} />;
   }

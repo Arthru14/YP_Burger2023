@@ -1,4 +1,10 @@
-import { FC, ReactNode, ReactPortal, useEffect } from "react";
+import {
+  FC,
+  PropsWithChildren,
+  ReactNode,
+  ReactPortal,
+  useEffect,
+} from "react";
 import { createPortal } from "react-dom";
 import { CloseIcon } from "@ya.praktikum/react-developer-burger-ui-components";
 import ModalOverlay from "../modal-overlay/modal-overlay";
@@ -8,10 +14,9 @@ interface IModal {
   onClose: () => void;
   visible: boolean;
   title?: string;
-  children: ReactNode;
 }
 
-const Modal: FC<IModal> = ({
+const Modal: FC<PropsWithChildren<IModal>> = ({
   visible,
   title,
   onClose,

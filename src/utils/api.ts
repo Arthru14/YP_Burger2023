@@ -31,7 +31,7 @@ const checkSuccess = (res: any) => {
 
 // создаем универсальную фукнцию запроса с проверкой ответа и `success`
 // В вызов приходит `endpoint`(часть урла, которая идет после базового) и опции
-export const request = async (endpoint: string, options?: any) => {
+export const request = async (endpoint: RequestInfo, options?: RequestInit) => {
   // а также в ней базовый урл сразу прописывается, чтобы не дублировать в каждом запросе
   return await fetch(`${BASE_URL}${endpoint}`, options)
     .then(checkResponse)
@@ -134,7 +134,7 @@ export function changeUserProfileRequest(
     headers: {
       Accept: "application/json",
       "Content-Type": "application/json",
-      authorization: getCookie("accessToken"),
+      // authorization: getCookie("accessToken"),
     },
     body: JSON.stringify({
       authorization: getCookie("accessToken"),

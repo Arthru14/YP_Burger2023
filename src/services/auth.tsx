@@ -53,8 +53,9 @@ export function useProvideAuth() {
 
   const getUser = async () => {
     try {
-      const data = await getUserRequest();
-      setUser({ name: data.user.name, email: data.user.email });
+      const data = await getUserRequest().then((res) =>
+        setUser({ name: res.user.name, email: res.user.email })
+      );
     } catch (ex: unknown) {
       console.log((ex as Error).message);
     }

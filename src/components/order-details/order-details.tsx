@@ -1,4 +1,3 @@
-import PropTypes from "prop-types";
 import styles from "./order-details.module.css";
 import { CheckMarkIcon } from "@ya.praktikum/react-developer-burger-ui-components";
 import { FC } from "react";
@@ -7,7 +6,7 @@ interface IOrderDetailsProps {
   orderNum: number;
 }
 
-const OrderDetails:FC<IOrderDetailsProps> = ({orderNum}) => {
+const OrderDetails: FC<IOrderDetailsProps> = ({ orderNum }) => {
   return (
     <div className={styles.content}>
       <h1 className="text text_type_digits-large mb-8">
@@ -29,6 +28,6 @@ const OrderDetails:FC<IOrderDetailsProps> = ({orderNum}) => {
       </div>
     </div>
   );
-}
+};
 
 export default OrderDetails;
