@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { ChangeEvent, useState } from "react";
 import styles from "./profile-page.module.css";
 import {
   EmailInput,
@@ -8,16 +8,16 @@ import {
 } from "@ya.praktikum/react-developer-burger-ui-components";
 import { Link, useNavigate } from "react-router-dom";
 import { useAuth } from "../services/auth";
-import { useDispatch, useSelector } from "react-redux";
+import { useDispatch } from "react-redux";
 import { updateUserProfile } from "../services/actions/auth-creator";
+import { useAppDispatch } from "..";
 
 export function ProfilePage() {
   const userAuth = useAuth();
-  const savedName = userAuth.user.name;
-  const savedEmail = userAuth.user.email;
-  // const { name, email } = useSelector((store) => store.userReducer.currentUser);
+  const savedName = userAuth.user?.name;
+  const savedEmail = userAuth.user?.email;
 
-  const dispatch = useDispatch();
+  const dispatch = useAppDispatch();
   const navigate = useNavigate();
 
   const [valueEmail, setValueEmail] = useState(savedEmail);
@@ -30,30 +30,27 @@ export function ProfilePage() {
     password: true,
   });
 
-  const onChangeUserName = (e) => {
+  const onChangeUserName = (e: ChangeEvent<HTMLInputElement>) => {
     setValueUserName(e.target.value);
     setIsEditUserInfo(true);
   };
 
-  const onChangeEmail = (e) => {
+  const onChangeEmail = (e: ChangeEvent<HTMLInputElement>) => {
     setValueEmail(e.target.value);
     setIsEditUserInfo(true);
   };
 
-  const onChangePassword = (e) => {
+  const onChangePassword = (e: ChangeEvent<HTMLInputElement>) => {
     setValuePassword(e.target.value);
     setIsEditUserInfo(true);
   };
 
-  const onSaveUserInfo = (e) => {
-    dispatch(updateUserProfile(valueUserName, valuePassword, valueEmail)).then(
-      function () {
-        navigate("/profile");
-      }
-    );
+  const onSaveUserInfo = async () => {
+    await dispatch(updateUserProfile(valueUserName, valuePassword, valueEmail));
+    navigate("/profile");
   };
 
-  const onCancelUserInfo = (e) => {
+  const onCancelUserInfo = () => {
     setValueEmail(savedEmail);
     setValuePassword("");
     setValueUserName(savedName);
@@ -92,7 +89,7 @@ export function ProfilePage() {
               type={"text"}
               placeholder={"имя"}
               onChange={onChangeUserName}
-              value={valueUserName}
+              value={valueUserName ? valueUserName : ""}
               name={"name"}
               error={false}
               errorText={"Ошибка"}
@@ -106,12 +103,12 @@ export function ProfilePage() {
             />
             <EmailInput
               onChange={onChangeEmail}
-              value={valueEmail}
+              value={valueEmail ? valueEmail : ""}
               name={"email"}
               isIcon={true}
-              onIconClick={() =>
-                setIsEditInfo({ ...isEditInfo, email: !isEditInfo.email })
-              }
+              // onIconClick={() =>
+              //   setIsEditInfo({ ...isEditInfo, email: !isEditInfo.email })
+              // }
               extraClass="pt-3 pb-3"
               disabled={isEditInfo.email}
             />
@@ -121,9 +118,9 @@ export function ProfilePage() {
               name={"password"}
               icon="EditIcon"
               extraClass="pt-3 pb-3"
-              onIconClick={() =>
-                setIsEditInfo({ ...isEditInfo, password: !isEditInfo.password })
-              }
+              // onIconClick={() =>
+              //   setIsEditInfo({ ...isEditInfo, password: !isEditInfo.password })
+              // }
               disabled={isEditInfo.password}
             />
             {isEditUserInfo && (

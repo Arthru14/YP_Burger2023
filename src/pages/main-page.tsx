@@ -7,7 +7,7 @@ import { useEffect } from "react";
 
 export function MainPage() {
   const { isBurgerDataLoaded } = useSelector(
-    (store) => store.ingredientReducer
+    (store: any) => store.ingredientReducer
   );
     const { getUser, ...auth } = useAuth();
 

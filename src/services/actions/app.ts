@@ -4,8 +4,9 @@ import {
   LOAD_INGREDIENTS_SUCCESS,
 } from "./burger-ingredients";
 import { request, INGRID_ENDPOINT } from "../../utils/api";
+import { Dispatch } from "redux";
 
-export const getBurgerData = () => async (dispatch) => {
+export const getBurgerData = () => async (dispatch: Dispatch<any>) => {
   try {
     dispatch({ type: LOAD_INGREDIENTS });
 

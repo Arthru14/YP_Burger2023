@@ -1,11 +1,5 @@
-import { useEffect, useLayoutEffect } from "react";
-import { useDispatch, useSelector } from "react-redux";
-import {
-  BrowserRouter as Router,
-  Routes,
-  Route,
-  useLocation,
-} from "react-router-dom";
+import { useEffect } from "react";
+import { Routes, Route, useLocation } from "react-router-dom";
 import AppHeader from "../app-header/app-header";
 import { getBurgerData } from "../../services/actions/app";
 import {
@@ -20,15 +14,13 @@ import {
   OrderHistoryPage,
   IngridDetailPage,
 } from "../../pages";
-import { ProvideAuth, useAuth } from "../../services/auth";
 import ProtectedRoute from "../protected-route/protected-route";
-import { CLEAR_SELECTED_INGREDIENT } from "../../services/actions/burger-ingredients";
-import Modal from "../modal/modal";
 import IngredientDetails from "../ingredient-details/ingredient-details";
 import { getUserAction } from "../../services/actions/auth-creator";
+import { useAppDispatch } from "../..";
 
 function App() {
-  const dispatch = useDispatch();
+  const dispatch = useAppDispatch();
   const location = useLocation();
 
   useEffect(() => {

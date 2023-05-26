@@ -5,33 +5,9 @@ import {
   BurgerIcon,
   ListIcon,
   ProfileIcon,
-  Button,
 } from "@ya.praktikum/react-developer-burger-ui-components";
-import { useSelector } from "react-redux";
 import { useAuth } from "../../services/auth";
-
-const NavLink = ({ title, icon, link, currentPage }) => {
-  const Icon = icon;
-  return (
-    <Link to={link}>
-      <Button
-        htmlType="button"
-        type="secondary"
-        size="medium"
-        className={styles.NavButton}
-      >
-        <Icon type={currentPage ? "primary" : "secondary"} className="pr-2" />
-        <div
-          className={`pl-2 text text_type_main-default ${
-            !currentPage ? "text_color_inactive" : null
-          }`}
-        >
-          {title}
-        </div>
-      </Button>
-    </Link>
-  );
-};
+import NavLink from "./nav-link";
 
 function AppHeader() {
   const location = useLocation();
@@ -58,13 +34,13 @@ function AppHeader() {
               title="Конструктор"
               icon={BurgerIcon}
               link="/"
-              currentPage={isConstructorPage}
+              currentPage={isConstructorPage ? 'primary' : 'secondary'}
             />
             <NavLink
               title="Лента заказов"
               icon={ListIcon}
               link="/orderList"
-              currentPage={isOrderListPage}
+              currentPage={isOrderListPage ? 'primary' : 'secondary'}
             />
           </div>
           <div className={styles.navLogo}>
@@ -77,7 +53,7 @@ function AppHeader() {
               title={userName ? userName : "Личный кабинет"}
               icon={ProfileIcon}
               link="/profile"
-              currentPage={isProfilePage}
+              currentPage={isProfilePage ? 'primary' : 'secondary'}
             />
           </div>
         </nav>

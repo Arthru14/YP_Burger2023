@@ -4,10 +4,10 @@ import { useSelector } from "react-redux";
 
 export default function IngredientDetails() {
   const selectedItem = useSelector(
-    (store) => store.ingredientReducer.selectedItem
+    (store: any) => store.ingredientReducer.selectedItem
   );
   useEffect(() => {
-    window.history.replaceState(null, null, "/ingredients/" + selectedItem._id);
+    window.history.replaceState(null, "", "/ingredients/" + selectedItem._id);
   }, [selectedItem._id]);
 
   return (

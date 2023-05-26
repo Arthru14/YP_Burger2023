@@ -1,84 +1,26 @@
-import { useEffect, useState } from "react";
+import { FC, useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { useInView } from "react-intersection-observer";
-//import PropTypes from "prop-types";
-import styles from "./burger-ingredients.module.css";
-import { Tab } from "@ya.praktikum/react-developer-burger-ui-components";
-import { CurrencyIcon } from "@ya.praktikum/react-developer-burger-ui-components";
-import { Counter } from "@ya.praktikum/react-developer-burger-ui-components";
 import Modal from "../modal/modal";
 import IngredientDetails from "../ingredient-details/ingredient-details";
-//import ServerDataTypes from "../../utils/data-format";
 import {
   CHANGE_SELECTED_INGREDIENT,
   CLEAR_SELECTED_INGREDIENT,
 } from "../../services/actions/burger-ingredients";
-import { useDrag } from "react-dnd";
 import { useModal } from "../../hooks/useModal";
-import { Link, useLocation, useNavigate } from "react-router-dom";
+import styles from "./burger-ingredients.module.css";
+import Tabs from "./tabs";
+import ItemOfBurger from "./item-of-burger";
+import { useAppSelector } from "../../hooks/useAppSelector";
+import { TTabsProps } from "../../types/burger-ingredients";
 
-function Tabs(props) {
-  return (
-    <div className={styles.tab_main}>
-      <Tab value="one" active={props.active === "one"}>
-        Булки
-      </Tab>
-      <Tab value="two" active={props.active === "two"}>
-        Соусы
-      </Tab>
-      <Tab value="three" active={props.active === "three"}>
-        Начинки
-      </Tab>
-    </div>
-  );
-}
-
-function PriceOut(props) {
-  return (
-    <div className={`${styles.price_out_main} pt-1 pb-1`}>
-      <span className="text text_type_digits-default pr-4">{props.price}</span>
-      <CurrencyIcon type="primary" />
-    </div>
-  );
-}
-
-function ItemOfBurger(props) {
-  const location = useLocation();
-
-  const { isBun, id, price } = props;
-  const [, dragRef] = useDrag({
-    type: "burger",
-    item: { id, price, isBun },
-  });
-
-  const addedIngreds = useSelector(
-    (store) => store.constructorsReducer.addedIngreds
-  );
-  const count = addedIngreds.filter((item) => item.ingridId === id).length;
-
-  return (
-    <Link
-      to={{
-        pathname: `/ingredients/${props.id}`,
-      }}
-      state={{ background: location }}
-    >
-      <div
-        className={`${styles.ingridItem} pr-3 pl-3 pt-6 pb-2`}
-        onClick={() => props.onClick(true)}
-      >
-        <div className={styles.item_of_burger} key={props.id} ref={dragRef}>
-          <img src={props.img} alt={props.name} />
-          {count > 0 && (
-            <Counter count={count} size="default" extraClass="m-1" />
-          )}
-        </div>
-        <PriceOut price={props.price} />
-        <span className="ext text_type_main-default">{props.name}</span>
-      </div>
-    </Link>
-  );
-}
+type TIngridItem = {
+  type: string;
+  _id: string;
+  price: number;
+  image: string;
+  name: string;
+};
 
 function BurgerIngredients() {
   const [refBun, inViewBun] = useInView({
@@ -92,24 +34,26 @@ function BurgerIngredients() {
   });
 
   const dispatch = useDispatch();
-  const navigate = useNavigate();
 
-  const burgerData = useSelector(
+  const burgerData = useAppSelector<Array<TIngridItem>>(
     (store) => store.ingredientReducer.itemsOfIngrids
   );
+  // const burgerData = useSelector(
+  //   (store: any) => store.ingredientReducer.itemsOfIngrids
+  // );
   const selectedItem = useSelector(
-    (store) => store.ingredientReducer.selectedItem
+    (store: any) => store.ingredientReducer.selectedItem
   );
 
   const { isModalOpen, openModal, closeModal } = useModal();
 
-  const [currentTab, setCurrentTab] = useState("one");
+  const [currentTab, setCurrentTab] = useState<TTabsProps>("one");
 
   const handleOpenModal = () => {
     openModal();
   };
 
-  const activeTab = () => {
+  const activeTab = (): TTabsProps => {
     if (inViewBun) {
       return "one";
     } else if (inViewSauce) {
@@ -117,6 +61,7 @@ function BurgerIngredients() {
     } else if (inViewMain) {
       return "three";
     }
+    return "one";
   };
 
   useEffect(() => {
@@ -131,11 +76,10 @@ function BurgerIngredients() {
         <div id="bunDiv" ref={refBun}>
           <h2 className="text text_type_main-medium pt-10">Булки</h2>
           <div className={styles.ingrid}>
-            {burgerData.map((ingridItem, index) => {
+            {burgerData.map((ingridItem) => {
               return ingridItem.type === "bun" ? (
                 <ItemOfBurger
                   isBun
-                  count={2}
                   key={ingridItem._id}
                   price={ingridItem.price}
                   img={ingridItem.image}
@@ -156,11 +100,10 @@ function BurgerIngredients() {
         <div id="sauceDiv" ref={refSauce}>
           <h2 className="text text_type_main-medium pt-2">Соусы</h2>
           <div className={styles.ingrid}>
-            {burgerData.map((ingridItem, index) => {
+            {burgerData.map((ingridItem) => {
               return ingridItem.type === "sauce" ? (
                 <ItemOfBurger
                   key={ingridItem._id}
-                  count={2}
                   price={ingridItem.price}
                   img={ingridItem.image}
                   name={ingridItem.name}
@@ -180,11 +123,10 @@ function BurgerIngredients() {
         <div id="mainDiv" ref={refMain}>
           <h2 className="text text_type_main-medium pt-2">Начинки</h2>
           <div className={styles.ingrid}>
-            {burgerData.map((ingridItem, index) => {
+            {burgerData.map((ingridItem) => {
               return ingridItem.type === "main" ? (
                 <ItemOfBurger
                   key={ingridItem._id}
-                  count={2}
                   price={ingridItem.price}
                   img={ingridItem.image}
                   name={ingridItem.name}
@@ -205,7 +147,7 @@ function BurgerIngredients() {
           <Modal
             onClose={() => {
               closeModal();
-              window.history.replaceState(null, null, "/");
+              window.history.replaceState(null, "", "/");
               dispatch({ type: CLEAR_SELECTED_INGREDIENT });
             }}
             title="Детали ингредиента"

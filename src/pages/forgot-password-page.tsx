@@ -1,16 +1,19 @@
-import { useEffect, useState } from "react";
+import { ChangeEvent, FormEvent, useEffect, useState } from "react";
 import styles from "./forgot-password-page.module.css";
 import {
   EmailInput,
   Button,
 } from "@ya.praktikum/react-developer-burger-ui-components";
 import { Link, useNavigate } from "react-router-dom";
-import { useDispatch, useSelector } from "react-redux";
+import { useSelector } from "react-redux";
 import { sendEmailCode } from "../services/actions/auth-creator";
+import { useAppDispatch } from "..";
 
-export function ForgotPasswordPage() {
-  const dispatch = useDispatch();
-  const resetSuccess = useSelector((store) => store.userReducer.resetSuccess);
+export const ForgotPasswordPage = () => {
+  const dispatch = useAppDispatch();
+  const resetSuccess = useSelector(
+    (store: any) => store.userReducer.resetSuccess
+  );
   const navigate = useNavigate();
 
   const [valueEmail, setValueEmail] = useState("bob@example.com");
@@ -21,11 +24,11 @@ export function ForgotPasswordPage() {
     }
   }, [resetSuccess, navigate]);
 
-  const onChangeEmail = (e) => {
+  const onChangeEmail = (e: ChangeEvent<HTMLInputElement>) => {
     setValueEmail(e.target.value);
   };
 
-  const onSendCode = (e) => {
+  const onSendCode = (e: FormEvent) => {
     e.preventDefault();
     dispatch(sendEmailCode(valueEmail));
   };
@@ -55,4 +58,4 @@ export function ForgotPasswordPage() {
       </div>
     </main>
   );
-}
+};

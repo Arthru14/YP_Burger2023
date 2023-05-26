@@ -1,4 +1,4 @@
-import { useEffect, useRef, useState } from "react";
+import { ChangeEvent, FormEvent, useEffect, useRef, useState } from "react";
 import styles from "./register-page.module.css";
 import {
   EmailInput,
@@ -7,13 +7,12 @@ import {
   Input,
 } from "@ya.praktikum/react-developer-burger-ui-components";
 import { Link, useNavigate } from "react-router-dom";
-import { useDispatch, useSelector } from "react-redux";
 import { registerNewUser } from "../services/actions/auth-creator";
 import { useAuth } from "../services/auth";
+import { useAppDispatch } from "..";
 
 export function RegisterPage() {
-  const dispatch = useDispatch();
-  // const userName = useSelector((store) => store.userReducer.currentUser.name);
+  const dispatch = useAppDispatch();
   const navigate = useNavigate();
   const userAuth = useAuth();
   const userName = userAuth.user?.name;
@@ -30,30 +29,25 @@ export function RegisterPage() {
     }
   }, [userName, navigate]);
 
-  const onChangeEmail = (e) => {
+  const onChangeEmail = (e: ChangeEvent<HTMLInputElement>) => {
     setValueEmail(e.target.value);
   };
 
-  const onChangePassword = (e) => {
+  const onChangePassword = (e: ChangeEvent<HTMLInputElement>) => {
     setValuePassword(e.target.value);
   };
 
-  const onSubmit = async (e) => {
+  const onSubmitFun = (e: FormEvent) => {
     e.preventDefault();
     dispatch(registerNewUser(valueUserName, valuePassword, valueEmail));
     navigate("/login");
-  };
-
-  const onIconClick = () => {
-    setTimeout(() => inputRef.current.focus(), 0);
-    alert("Icon Click Callback");
   };
 
   return (
     <main className={styles.wrapper}>
       <div className={styles.content}>
         <span className="pb-3 text text_type_main-medium">Регистрация</span>
-        <form onSubmit={onSubmit}>
+        <form onSubmit={onSubmitFun}>
           <Input
             type={"text"}
             placeholder={"имя"}
